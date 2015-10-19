@@ -1,4 +1,4 @@
-package jp.kobe_u.cspiral.alpaca;
+package jp.cloudgarden.sever.jax;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,7 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import jp.kobe_u.cspiral.alpaca.model.PhotoIdList;
+import jp.cloudgarden.sever.model.PhotoIdList;
 
 @Path("/")
 public class JaxAdapter {

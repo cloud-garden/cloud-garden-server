@@ -1,4 +1,4 @@
-package jp.kobe_u.cspiral.alpaca.model;
+package jp.cloudgarden.sever.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

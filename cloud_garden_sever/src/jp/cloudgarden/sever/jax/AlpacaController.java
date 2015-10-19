@@ -1,4 +1,4 @@
-package jp.kobe_u.cspiral.alpaca;
+package jp.cloudgarden.sever.jax;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -10,10 +10,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import jp.kobe_u.cspiral.alpaca.model.Comment;
-import jp.kobe_u.cspiral.alpaca.model.Like;
-import jp.kobe_u.cspiral.alpaca.model.Report;
-import jp.kobe_u.cspiral.alpaca.util.DBUtils;
+import jp.cloudgarden.sever.model.Comment;
+import jp.cloudgarden.sever.model.Like;
+import jp.cloudgarden.sever.model.Report;
+import jp.cloudgarden.sever.util.DBUtils;
 
 import org.bson.types.ObjectId;
 

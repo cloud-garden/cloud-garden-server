@@ -1,4 +1,4 @@
-package jp.kobe_u.cspiral.alpaca.util;
+package jp.cloudgarden.sever.util;
 
 import java.net.UnknownHostException;
 
