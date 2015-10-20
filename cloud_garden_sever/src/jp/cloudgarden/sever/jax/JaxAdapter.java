@@ -37,6 +37,7 @@ public class JaxAdapter {
 		return Response.status(200).entity("<like>ok"+count++ +"</like>").build();
 	}
 
+
 	/**
 	 * コメントする
 	 * @param message コメント本文
