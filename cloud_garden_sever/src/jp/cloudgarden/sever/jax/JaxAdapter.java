@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -18,12 +20,38 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import jp.cloudgarden.sever.model.PhotoIdList;
+import jp.cloudgarden.sever.model.Schedule;
 
 @Path("/")
 public class JaxAdapter {
 
-	private final AlpacaController controller = new AlpacaController();
-	private static int count = 0;
+	private final CloudController controller = new CloudController();
+	public static final String OK_STATUS = "{\"status\" : \"ok\"}";
+
+	/**
+	 * 水やりスケジュールを作成し，DBに登録する
+	 * @param user ユーザID
+	 * @param isRoutine ルーチンであるかどうか
+	 * @param year 西暦
+	 * @param month 月
+	 * @param date 日付
+	 * @param hour 時間
+	 * @param minute 分
+	 * @return ok
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/createSchedule")
+	public Response createSchedule(@QueryParam("user") String user,@QueryParam("isRoutine") boolean isRoutine,
+			@QueryParam("year") int year,@QueryParam("month") int month,
+			@QueryParam("date") int date,@QueryParam("hour") int hour, @QueryParam("minute") int minute){
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month, date, hour, minute);
+		Date d = cal.getTime();
+		Schedule sc = new Schedule(user, d, isRoutine);
+		controller.addSchedule(sc);
+		return Response.status(200).entity(OK_STATUS).build();
+	}
 
 	/**
 	 * いいねを投稿する
@@ -34,7 +62,7 @@ public class JaxAdapter {
 	@Path("/like")
 	public Response like() {
 		controller.like();
-		return Response.status(200).entity("<like>ok"+count++ +"</like>").build();
+		return Response.status(200).entity("<like>ok</like>").build();
 	}
 
 
@@ -93,8 +121,7 @@ public class JaxAdapter {
 	@GET
 	@Produces("image/png")
 	@Path("/photo/{id}.png")
-	public Response getPhoto(
-			@PathParam("id") String id) {
+	public Response getPhoto(@PathParam("id") String id) {
 		ByteArrayOutputStream baos = controller.getPhoto(id);
 		if (baos == null) {
 			return Response.status(403).entity("<error>photo not found</error>").build();
