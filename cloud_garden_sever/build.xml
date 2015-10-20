@@ -58,7 +58,7 @@
 		<copy file="web.xml" tofile="${dest.dir.webinf}/web.xml" />
 
 		<!-- jarタスクによってwarファイルを作成 -->
-		<jar destfile="${service.name}.war" basedir="${dest.dir}" />
+		<jar destfile="${service.name}.war" basedir="${dest.dir}" />	
 
 	</target>
 </project>

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +52,18 @@ public class JaxAdapter {
 		Schedule sc = new Schedule(user, d, isRoutine);
 		controller.addSchedule(sc);
 		return Response.status(200).entity(OK_STATUS).build();
+	}
+
+	/**
+	 * @param user ユーザID
+	 * @return Scheduleの配列．時刻が若い順にソートしている．
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getActiveScheduleList")
+	public Schedule[] getActiveScheduleList(@QueryParam("user") String user){
+		List<Schedule> list = controller.getActiveScheduleList(user);
+		return list.toArray(new Schedule[0]);
 	}
 
 	/**

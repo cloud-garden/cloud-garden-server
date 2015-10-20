@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,12 +41,31 @@ public class CloudController {
 		this.schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 	}
 
-	public void addSchedule(Schedule sc){
+	public void addSchedule(Schedule sh){
 		DBObject o = new BasicDBObject();
-		o.put("user", sc.getUser());
-		o.put("Date", sc.getDate());
-		o.put("isRoutine", sc.isRoutine());
+		o.put("user", sh.getUser());
+		o.put("Date", sh.getDate());
+		o.put("isRoutine", sh.isRoutine());
 		schedule_collection.save(o);
+	}
+
+	public List<Schedule> getActiveScheduleList(String user){
+		List<Schedule> list = new ArrayList<Schedule>();
+
+		DBObject query = new BasicDBObject();
+		query.put("user", user);
+		DBCursor cusor = schedule_collection.find(query);
+		for(DBObject o : cusor){
+			ObjectId objId = (ObjectId) o.get("_id");
+			String id = objId.toString();
+			Date date = (Date) o.get("Date");
+			Boolean isRoutine = (Boolean) o.get("isRoutine");
+			Schedule sc = new Schedule(id ,user, date, isRoutine);
+			list.add(sc);
+		}
+		Collections.sort(list);
+
+		return list;
 	}
 
 	public void like() {
@@ -72,7 +93,7 @@ public class CloudController {
 		for (DBObject like : cursor) {
 			likes.add(new Like((Date)like.get("date")));
 		}
-		*/
+		 */
 		report.setTotalLike(cursor.count());
 		DBObject sort = new BasicDBObject("_id", -1);
 		cursor = past_collection.find(query).sort(sort).limit(n);
@@ -113,7 +134,7 @@ public class CloudController {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-		 return null;
+		return null;
 	}
 
 	public List<String> getPhotoList(int n) {

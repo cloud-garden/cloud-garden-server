@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class Like {
 	private Date date;
 	private String user;
-	
+
 	public Like() {
 		this(new Date(0), "");
 	}
@@ -27,7 +27,7 @@ public class Like {
 	public Date getDate() {
 		return date;
 	}
-	
+
 	@XmlElement(name="user")
 	public String getuser() {
 		return user;
