@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +26,8 @@ import jp.cloudgarden.sever.model.Schedule;
 public class JaxAdapter {
 
 	private final CloudController controller = new CloudController();
-	public static final String OK_STATUS = "{\"status\" : \"ok\"}";
+	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
+	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
 
 	/**
 	 * 水やりスケジュールを作成し，DBに登録する
@@ -49,23 +49,52 @@ public class JaxAdapter {
 		Calendar cal = Calendar.getInstance();
 		cal.set(year, month, date, hour, minute);
 		Date d = cal.getTime();
-		Schedule sc = new Schedule(user, d, isRoutine);
+		Schedule sc = new Schedule(user, d.getTime(), isRoutine);
 		controller.addSchedule(sc);
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
 	/**
+	 * アクティブなスケジュールの配列を返す．
 	 * @param user ユーザID
 	 * @return Scheduleの配列．時刻が若い順にソートしている．
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getActiveScheduleList")
-	public Schedule[] getActiveScheduleList(@QueryParam("user") String user){
+	public Response getActiveScheduleList(@QueryParam("user") String user){
 		List<Schedule> list = controller.getActiveScheduleList(user);
-		return list.toArray(new Schedule[0]);
+		if(list.size() > 1){
+			Schedule[] ret = list.toArray(new Schedule[0]);;
+			return Response.status(200).entity(ret).build();
+		}else if(list.size() == 1){
+			String ret = "{\"schedule\":["+list.get(0).getJsonString()+"]}";
+			return Response.status(200).entity(ret).build();
+		}else{
+			String ret = "{\"schedule\":[]}";
+			return Response.status(200).entity(ret).build();
+		}
 	}
 
+	/**
+	 * アクティブな水やりスケジュールを削除する．
+	 * @param id DBから削除するオブジェクトID
+	 * @return OK
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/deleteSchedule")
+	public Response deleteSchedule(@QueryParam("id") String id){
+		boolean isSuccess = controller.deleteSchedule(id);
+		if(isSuccess){
+			return Response.status(200).entity(OK_STATUS).build();
+		}else{
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+
+	}
+
+	//以下，アルパカ．参考用．
 	/**
 	 * いいねを投稿する
 	 * @return okだけ

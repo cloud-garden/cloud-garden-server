@@ -1,7 +1,5 @@
 package jp.cloudgarden.sever.model;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -9,15 +7,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Schedule implements Comparable<Schedule>{
 	private String id;
 	private String user;
-	private Date date;
+	private long date; //milli sec from 1/1/1970
 	private boolean isRoutine;
 
-	public Schedule(String user, Date date, boolean isRoutine) {
+	public Schedule(String user, long date, boolean isRoutine) {
 		this.user = user;
 		this.date = date;
 		this.isRoutine = isRoutine;
 	}
-	public Schedule(String id ,String user, Date date, boolean isRoutine) {
+	public Schedule(String id ,String user, long date, boolean isRoutine) {
 		this(user, date, isRoutine);
 		this.id = id;
 	}
@@ -30,7 +28,7 @@ public class Schedule implements Comparable<Schedule>{
 		return user;
 	}
 	@XmlElement(name="date")
-	public Date getDate() {
+	public long getDate() {
 		return date;
 	}
 	@XmlElement(name="isRoutine")
@@ -44,7 +42,16 @@ public class Schedule implements Comparable<Schedule>{
 
 	@Override
 	public int compareTo(Schedule o) {
-		return this.date.compareTo(o.getDate());
+		return (int) (this.date - o.getDate());
+	}
+
+	public String getJsonString(){
+		StringBuffer bf = new StringBuffer();
+		bf.append("{\"date\":\"").append(date).append("\",")//Tue Feb 01 14:33:27 JST 2022
+		.append("\"id\":\"").append(id).append("\",")
+		.append("\"isRoutine\":\"").append(isRoutine).append("\",")
+		.append("\"user\":\"").append(user).append("\"}");
+		return bf.toString();
 	}
 
 }

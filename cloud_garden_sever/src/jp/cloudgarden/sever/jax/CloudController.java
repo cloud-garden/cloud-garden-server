@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -58,16 +57,26 @@ public class CloudController {
 		for(DBObject o : cusor){
 			ObjectId objId = (ObjectId) o.get("_id");
 			String id = objId.toString();
-			Date date = (Date) o.get("Date");
+			long date = (long) o.get("Date");
 			Boolean isRoutine = (Boolean) o.get("isRoutine");
 			Schedule sc = new Schedule(id ,user, date, isRoutine);
 			list.add(sc);
 		}
 		Collections.sort(list);
-
 		return list;
 	}
 
+	public boolean deleteSchedule(String id){
+		if(!ObjectId.isValid(id)) return false;
+		ObjectId objid = new ObjectId(id);
+		DBObject query = new BasicDBObject();
+		query.put("_id", objid);
+		schedule_collection.remove(query);
+		return true;
+	}
+
+
+	//以下，アルパカ．参考用．
 	public void like() {
 		DBObject like = new BasicDBObject();
 		like.put("date", new Date());
