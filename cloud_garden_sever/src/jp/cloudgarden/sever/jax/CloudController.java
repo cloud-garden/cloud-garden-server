@@ -43,7 +43,7 @@ public class CloudController {
 	public void addSchedule(Schedule sh){
 		DBObject o = new BasicDBObject();
 		o.put("user", sh.getUser());
-		o.put("Date", sh.getDate());
+		o.put("date", sh.getDate());
 		o.put("isRoutine", sh.isRoutine());
 		schedule_collection.save(o);
 	}
@@ -57,7 +57,7 @@ public class CloudController {
 		for(DBObject o : cusor){
 			ObjectId objId = (ObjectId) o.get("_id");
 			String id = objId.toString();
-			long date = (long) o.get("Date");
+			long date = (long) o.get("date");
 			Boolean isRoutine = (Boolean) o.get("isRoutine");
 			Schedule sc = new Schedule(id ,user, date, isRoutine);
 			list.add(sc);

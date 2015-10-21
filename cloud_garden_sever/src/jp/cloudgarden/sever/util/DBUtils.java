@@ -20,7 +20,8 @@ public class DBUtils {
 
 //	private final String host = new String("133.30.159.8");
 //	private final String host = new String("192.168.10.2");
-	private final String host = new String("localhost");
+//	private final String host = new String("localhost");
+	private final String host = new String("");
 	private final String dbName = new String("cloud");
 
 	private DBUtils() {

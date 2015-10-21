@@ -94,6 +94,43 @@ public class JaxAdapter {
 
 	}
 
+	/**
+	 *
+	 * @param userId ユーザID
+	 * @return
+	 */
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getCurrentState")
+	public Response getCurrentState(@QueryParam("user") String userId){
+		return null;
+	}
+
+	/**
+	 * 過去の作物状態の配列を返す
+	 * @param userId ユーザID
+	 * @return 過去の作物状態の配列
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getPastStateList")
+	public Response getPastStateList(@QueryParam("user") String userId){
+
+		return null;
+	}
+
+	/**
+	 * 過去の処理履歴の配列を返す．
+	 * @param userId  ユーザID
+	 * @return　過去の処理履歴の配列．
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getPastScheduleList")
+	public Response getPastScheduleList(@QueryParam("user") String userId){
+		return null;
+	}
+
 	//以下，アルパカ．参考用．
 	/**
 	 * いいねを投稿する
