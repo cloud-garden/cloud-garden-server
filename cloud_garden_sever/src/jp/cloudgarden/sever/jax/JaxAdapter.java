@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -21,11 +20,13 @@ import javax.ws.rs.core.Response;
 
 import jp.cloudgarden.sever.model.PhotoIdList;
 import jp.cloudgarden.sever.model.Schedule;
+import jp.cloudgarden.sever.threads.ScheduleCheckTread;
 
 @Path("/")
 public class JaxAdapter {
 
 	private final CloudController controller = new CloudController();
+	private	ScheduleCheckTread scheduleCheckTread;
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
 
@@ -47,10 +48,9 @@ public class JaxAdapter {
 			@QueryParam("year") int year,@QueryParam("month") int month,
 			@QueryParam("date") int date,@QueryParam("hour") int hour, @QueryParam("minute") int minute){
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, date, hour, minute);
-		Date d = cal.getTime();
-		Schedule sc = new Schedule(user, d.getTime(), isRoutine);
-		controller.addSchedule(sc);
+		cal.set(year, month-1, date, hour, minute);
+		Schedule sc = new Schedule(user, cal.getTimeInMillis(), isRoutine);
+		controller.createActiveSchedule(sc);
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
@@ -85,7 +85,7 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/deleteSchedule")
 	public Response deleteSchedule(@QueryParam("id") String id){
-		boolean isSuccess = controller.deleteSchedule(id);
+		boolean isSuccess = controller.deleteActiveSchedule(id);
 		if(isSuccess){
 			return Response.status(200).entity(OK_STATUS).build();
 		}else{
@@ -122,13 +122,38 @@ public class JaxAdapter {
 	/**
 	 * 過去の処理履歴の配列を返す．
 	 * @param userId  ユーザID
-	 * @return　過去の処理履歴の配列．
+	 * @return 過去の処理履歴の配列．
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastScheduleList")
 	public Response getPastScheduleList(@QueryParam("user") String userId){
 		return null;
+	}
+
+	/**
+	 * start schedule check.
+	 * @return OK
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/start")
+	public Response startScheduleCheck(){
+		scheduleCheckTread = new ScheduleCheckTread(controller);
+		scheduleCheckTread.start();
+		return Response.status(200).entity(OK_STATUS).build();
+	}
+
+	/**
+	 * stop schedule check.
+	 * @return OK
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/stop")
+	public Response stopScheduleCheck(){
+		scheduleCheckTread.stopThread();
+		return Response.status(200).entity(OK_STATUS).build();
 	}
 
 	//以下，アルパカ．参考用．

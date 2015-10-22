@@ -3,6 +3,10 @@ package jp.cloudgarden.sever.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.DBObject;
+
 @XmlRootElement
 public class Schedule implements Comparable<Schedule>{
 	private String id;
@@ -19,6 +23,13 @@ public class Schedule implements Comparable<Schedule>{
 		this(user, date, isRoutine);
 		this.id = id;
 	}
+	public Schedule(DBObject o){
+		ObjectId objId = (ObjectId) o.get("_id");
+		this.id = objId.toString();
+		this.user = (String) o.get("user");
+		this.date = (long) o.get("date");
+		this.isRoutine = (Boolean) o.get("isRoutine");
+	}
 	public Schedule() {
 
 	}
@@ -31,13 +42,25 @@ public class Schedule implements Comparable<Schedule>{
 	public long getDate() {
 		return date;
 	}
-	@XmlElement(name="isRoutine")
+		@XmlElement(name="isRoutine")
 	public boolean isRoutine() {
 		return isRoutine;
 	}
 	@XmlElement(name="id")
 	public String getId() {
 		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	public void setDate(long date) {
+		this.date = date;
+	}
+	public void setRoutine(boolean isRoutine) {
+		this.isRoutine = isRoutine;
 	}
 
 	@Override

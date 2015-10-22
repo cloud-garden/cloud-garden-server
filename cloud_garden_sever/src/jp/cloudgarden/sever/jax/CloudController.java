@@ -5,11 +5,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import jp.cloudgarden.sever.model.Comment;
 import jp.cloudgarden.sever.model.Like;
@@ -18,11 +24,16 @@ import jp.cloudgarden.sever.model.Schedule;
 import jp.cloudgarden.sever.util.DBUtils;
 
 import org.bson.types.ObjectId;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.Base64;
 
 public class CloudController {
@@ -31,50 +42,113 @@ public class CloudController {
 	private final String scheduleCollectionName = "schedule";
 
 	private DBCollection state_collection;
-	private DBCollection past_collection;
-	private DBCollection schedule_collection;
+	private DBCollection past_schedule_collection;
+	private DBCollection active_schedule_collection;
+
+	private final String HARD_URL = "";
 
 	public CloudController() {
 		this.state_collection = DBUtils.getInstance().getDb().getCollection(stateCollectionName);
-		this.past_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
-		this.schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
+		this.past_schedule_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
+		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 	}
 
-	public void addSchedule(Schedule sh){
+	private void insertScheduleDB(DBCollection col , Schedule sc){
 		DBObject o = new BasicDBObject();
-		o.put("user", sh.getUser());
-		o.put("date", sh.getDate());
-		o.put("isRoutine", sh.isRoutine());
-		schedule_collection.save(o);
+		o.put("user", sc.getUser());
+		o.put("date", sc.getDate());
+		o.put("isRoutine", sc.isRoutine());
+		col.save(o);
+	}
+
+	public void createActiveSchedule(Schedule sc){
+		insertScheduleDB(active_schedule_collection, sc);
 	}
 
 	public List<Schedule> getActiveScheduleList(String user){
 		List<Schedule> list = new ArrayList<Schedule>();
-
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = schedule_collection.find(query);
+		DBCursor cusor = active_schedule_collection.find(query);
 		for(DBObject o : cusor){
-			ObjectId objId = (ObjectId) o.get("_id");
-			String id = objId.toString();
-			long date = (long) o.get("date");
-			Boolean isRoutine = (Boolean) o.get("isRoutine");
-			Schedule sc = new Schedule(id ,user, date, isRoutine);
+			Schedule sc = new Schedule(o);
 			list.add(sc);
 		}
 		Collections.sort(list);
 		return list;
 	}
 
-	public boolean deleteSchedule(String id){
+	public boolean deleteActiveSchedule(String id){
 		if(!ObjectId.isValid(id)) return false;
 		ObjectId objid = new ObjectId(id);
 		DBObject query = new BasicDBObject();
 		query.put("_id", objid);
-		schedule_collection.remove(query);
+		active_schedule_collection.remove(query);
 		return true;
 	}
 
+	public void checkSchedules(){
+		Calendar currentTime = Calendar.getInstance();
+
+		DBCursor cusor = active_schedule_collection.find();
+		for(DBObject o : cusor){
+			long date = (long) o.get("date");
+			boolean isRoutine = (boolean) o.get("isRoutine");
+			Calendar scheduledTime = Calendar.getInstance();
+			scheduledTime.setTimeInMillis(date);
+			System.err.println("isRoutine = "+ isRoutine );
+			System.err.println("Tscheduled "+scheduledTime.getTime());
+			System.err.println("Tcurrent   "+currentTime.getTime());
+			if(isRoutine){
+				if(scheduledTime.get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY)
+						&& scheduledTime.get(Calendar.MINUTE) == currentTime.get(Calendar.MINUTE) ){
+					System.err.println("routine watering");
+					//						executeWatering();
+					Schedule sc = new Schedule(o);
+					sc.setDate(currentTime.getTime().getTime());
+					insertScheduleDB(past_schedule_collection, sc);
+				}
+			}else{
+				if(scheduledTime.compareTo(currentTime) > 0){
+					System.err.println("\tFuture");
+					continue;
+				}
+				System.err.println("not routine watering");
+				//If d is a past time, execute watering.
+				//					executeWatering();
+				Schedule sc = new Schedule(o);
+				deleteActiveSchedule(sc.getId());
+				sc.setDate(currentTime.getTime().getTime());
+				insertScheduleDB(past_schedule_collection, sc);
+			}
+			//			} catch (WateringErrorException e) {
+			//				e.printStackTrace();
+			//			}
+		}
+	}
+
+	private void executeWatering() throws WateringErrorException{
+		Client client = Client.create();
+		WebResource webResource = client.resource(HARD_URL).path("");
+		//受け取る型を指定できるらしい．対応するBeanを作成するのもアリ．
+		String json = webResource.accept(MediaType.APPLICATION_XML).get(String.class);
+		//具体的な返り値の実装がまだ分からないので，空けておく．
+		//エラーが起こったら例外を投げる
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+			Document document = documentBuilder.parse(json);
+			Element root = document.getDocumentElement();
+			//	root.getAttribute("status").equals("OK");
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private class WateringErrorException extends Exception {
+		private static final long serialVersionUID = 1234L;
+
+	}
 
 	//以下，アルパカ．参考用．
 	public void like() {
@@ -87,7 +161,7 @@ public class CloudController {
 		DBObject comment = new BasicDBObject();
 		comment.put("date", new Date());
 		comment.put("message", message);
-		past_collection.save(comment);
+		past_schedule_collection.save(comment);
 	}
 
 	public Report getReport(int n) {
@@ -105,7 +179,7 @@ public class CloudController {
 		 */
 		report.setTotalLike(cursor.count());
 		DBObject sort = new BasicDBObject("_id", -1);
-		cursor = past_collection.find(query).sort(sort).limit(n);
+		cursor = past_schedule_collection.find(query).sort(sort).limit(n);
 		for (DBObject comment : cursor) {
 			comments.add(new Comment(
 					(Date)comment.get("date"), (String)comment.get("message")));
@@ -119,7 +193,7 @@ public class CloudController {
 
 	public String savePhoto(String photoData) {
 		DBObject dbo = new BasicDBObject("src", photoData);
-		schedule_collection.save(dbo);
+		active_schedule_collection.save(dbo);
 		String id = dbo.get("_id").toString();
 		return id;
 	}
@@ -127,7 +201,7 @@ public class CloudController {
 
 	public ByteArrayOutputStream getPhoto(String id) {
 		DBObject query = new BasicDBObject("_id", new ObjectId(id));
-		DBObject o = schedule_collection.findOne(query);
+		DBObject o = active_schedule_collection.findOne(query);
 		if (o == null) {
 			return null;
 		}
@@ -149,7 +223,7 @@ public class CloudController {
 	public List<String> getPhotoList(int n) {
 		List<String> list = new ArrayList<>();
 		DBObject orderBy = new BasicDBObject("$natural", -1);
-		DBCursor cursor = schedule_collection.find().sort(orderBy).limit(n);
+		DBCursor cursor = active_schedule_collection.find().sort(orderBy).limit(n);
 		for (DBObject o : cursor) {
 			list.add(o.get("_id").toString());
 		}
