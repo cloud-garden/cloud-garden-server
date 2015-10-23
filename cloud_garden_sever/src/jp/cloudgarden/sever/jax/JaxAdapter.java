@@ -34,22 +34,15 @@ public class JaxAdapter {
 	 * 水やりスケジュールを作成し，DBに登録する
 	 * @param user ユーザID
 	 * @param isRoutine ルーチンであるかどうか
-	 * @param year 西暦
-	 * @param month 月
-	 * @param date 日付
-	 * @param hour 時間
-	 * @param minute 分
+	 * @param date 時刻（1970年からの経過時間のミリ秒）
 	 * @return ok
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/createSchedule")
 	public Response createSchedule(@QueryParam("user") String user,@QueryParam("isRoutine") boolean isRoutine,
-			@QueryParam("year") int year,@QueryParam("month") int month,
-			@QueryParam("date") int date,@QueryParam("hour") int hour, @QueryParam("minute") int minute){
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month-1, date, hour, minute);
-		Schedule sc = new Schedule(user, cal.getTimeInMillis(), isRoutine);
+			@QueryParam("date") long date){
+		Schedule sc = new Schedule(user,date, isRoutine);
 		controller.createActiveSchedule(sc);
 		return Response.status(200).entity(OK_STATUS).build();
 	}
