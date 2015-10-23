@@ -26,7 +26,7 @@ import jp.cloudgarden.sever.threads.ScheduleCheckTread;
 public class JaxAdapter {
 
 	private final CloudController controller = new CloudController();
-	private	ScheduleCheckTread scheduleCheckTread;
+	private static ScheduleCheckTread scheduleCheckTread;
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
 
@@ -139,6 +139,8 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/start")
 	public Response startScheduleCheck(){
+		if(scheduleCheckTread != null && scheduleCheckTread.isRunning())
+			return Response.status(200).entity(OK_STATUS).build();
 		scheduleCheckTread = new ScheduleCheckTread(controller);
 		scheduleCheckTread.start();
 		return Response.status(200).entity(OK_STATUS).build();
@@ -152,7 +154,8 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/stop")
 	public Response stopScheduleCheck(){
-		scheduleCheckTread.stopThread();
+		if(scheduleCheckTread != null)
+			scheduleCheckTread.stopThread();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 

@@ -5,7 +5,7 @@ import jp.cloudgarden.sever.jax.CloudController;
 public class ScheduleCheckTread extends Thread {
 	private CloudController controller;
 	private boolean isRunning = false;
-	private int intervalSec = 60;
+	private int intervalSec = 5;
 
 	public ScheduleCheckTread(CloudController controller) {
 		this.controller = controller;
@@ -28,6 +28,10 @@ public class ScheduleCheckTread extends Thread {
 
 	public void stopThread(){
 		this.isRunning = false;
+	}
+
+	public boolean isRunning(){
+		return isRunning;
 	}
 
 }
