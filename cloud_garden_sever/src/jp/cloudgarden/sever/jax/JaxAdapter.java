@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -27,6 +26,7 @@ public class JaxAdapter {
 
 	private final CloudController controller = new CloudController();
 	private static ScheduleCheckTread scheduleCheckTread;
+	private static ScheduleCheckTread stateCheckTread;;
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
 
@@ -131,11 +131,16 @@ public class JaxAdapter {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/start")
-	public Response startScheduleCheck(){
+	public Response startCheck(){
 		if(scheduleCheckTread != null && scheduleCheckTread.isRunning())
 			return Response.status(200).entity(OK_STATUS).build();
 		scheduleCheckTread = new ScheduleCheckTread(controller);
 		scheduleCheckTread.start();
+
+		if(stateCheckTread != null && stateCheckTread.isRunning())
+			return Response.status(200).entity(OK_STATUS).build();
+		stateCheckTread = new ScheduleCheckTread(controller);
+		stateCheckTread.start();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
@@ -146,9 +151,11 @@ public class JaxAdapter {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/stop")
-	public Response stopScheduleCheck(){
+	public Response stopCheck(){
 		if(scheduleCheckTread != null)
 			scheduleCheckTread.stopThread();
+		if(stateCheckTread != null)
+			stateCheckTread.stopThread();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -21,6 +20,7 @@ import jp.cloudgarden.sever.model.Comment;
 import jp.cloudgarden.sever.model.Like;
 import jp.cloudgarden.sever.model.Report;
 import jp.cloudgarden.sever.model.Schedule;
+import jp.cloudgarden.sever.model.State;
 import jp.cloudgarden.sever.util.DBUtils;
 
 import org.bson.types.ObjectId;
@@ -53,13 +53,6 @@ public class CloudController {
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 	}
 
-	private void insertScheduleDB(DBCollection col , Schedule sc){
-		DBObject o = new BasicDBObject();
-		o.put("user", sc.getUser());
-		o.put("date", sc.getDate());
-		o.put("isRoutine", sc.isRoutine());
-		col.save(o);
-	}
 
 	public void createActiveSchedule(Schedule sc){
 		insertScheduleDB(active_schedule_collection, sc);
@@ -127,6 +120,15 @@ public class CloudController {
 		}
 	}
 
+	public void checkCurrentState(){
+		try {
+			State current = getStateFromHardwareServer();
+			insertStateDB(current);
+		} catch (MonitorErrorException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	private void executeWatering() throws WateringErrorException{
 		Client client = Client.create();
@@ -146,9 +148,39 @@ public class CloudController {
 		}
 	}
 
+
+	private void insertStateDB(State s){
+		DBObject o = new BasicDBObject();
+		o.put("user", s.getUserId());
+		o.put("date", s.getDate());
+		o.put("temp",s.getTemperature());
+		o.put("humid",s.getHumid());
+		o.put("photo", s.getPhoto());
+		state_collection.save(o);
+	}
+
+	private void insertScheduleDB(DBCollection col , Schedule sc){
+		DBObject o = new BasicDBObject();
+		o.put("user", sc.getUser());
+		o.put("date", sc.getDate());
+		o.put("isRoutine", sc.isRoutine());
+		col.save(o);
+	}
+
+	private State getStateFromHardwareServer() throws MonitorErrorException{
+		State ret = new State();
+		Calendar current = Calendar.getInstance();
+		ret.setDate(current.getTimeInMillis());
+		//set the other values.
+		return ret;
+	}
+
 	private class WateringErrorException extends Exception {
 		private static final long serialVersionUID = 1234L;
+	}
 
+	private class MonitorErrorException extends Exception {
+		private static final long serialVersionUID = 1234L;
 	}
 
 	//以下，アルパカ．参考用．
