@@ -4,35 +4,39 @@ package jp.cloudgarden.sever.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.DBObject;
+import com.sun.jersey.core.util.Base64;
+
 @XmlRootElement
 public class State {
-	private int id;
-	private int userId;
+	private String id;
+	private String user;
 	private long date;
 	private int temperature;
 	private int humid;
-	private byte[] photo;//ここでは写真のIDだけ保持してればいいかもしれない．
+	private String photoId;
 
-	public State(int id, int userId, long date, int temperature, int humid,
-			byte[] photo) {
-		super();
-		this.id = id;
-		this.userId = userId;
-		this.date = date;
-		this.temperature = temperature;
-		this.humid = humid;
-		this.photo = photo;
+	public State(DBObject o){
+		ObjectId objId = (ObjectId) o.get("_id");
+		this.id = objId.toString();
+		this.user = (String) o.get("user");
+		this.date = (long) o.get("date");
+		this.temperature = (int)o.get("temp");
+		this.humid = (int)o.get("humid");
+		this.photoId = (String)o.get("photo");
 	}
 	public State(){
 
 	}
 	@XmlElement(name="id")
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	@XmlElement(name="user")
-	public int getUserId() {
-		return userId;
+	public String getUser() {
+		return user;
 	}
 	@XmlElement(name="date")
 	public long getDate() {
@@ -47,15 +51,15 @@ public class State {
 		return humid;
 	}
 	@XmlElement(name="photo")
-	public byte[] getPhoto() {
-		return photo;
+	public String getPhoto() {
+		return photoId;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUser(String userId) {
+		this.user = userId;
 	}
 	public void setDate(long date) {
 		this.date = date;
@@ -66,7 +70,7 @@ public class State {
 	public void setHumid(int humid) {
 		this.humid = humid;
 	}
-	public void setPhoto(byte[] photo) {
-		this.photo = photo;
+	public void setPhoto(String photo) {
+		this.photoId = photo;
 	}
 }
