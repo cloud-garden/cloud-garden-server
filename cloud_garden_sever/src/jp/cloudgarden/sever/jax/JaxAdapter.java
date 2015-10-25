@@ -90,15 +90,16 @@ public class JaxAdapter {
 	}
 
 	/**
-	 *
+	 * 最近の作物状態を取得し，返す．このとき，DBの更新も行う．
 	 * @param userId ユーザID
-	 * @return
+	 * @return 作物状態のJSON
 	 */
-	@POST
+	@GET//最終的にはPOSTへ．
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getCurrentState")
-	public Response getCurrentState(@QueryParam("user") String userId){
-		return null;
+	public Response getCurrentState(@QueryParam("user") String user){
+		State current = controller.getCurrentState(user);
+		return Response.status(200).entity(current).build();
 	}
 
 	/**

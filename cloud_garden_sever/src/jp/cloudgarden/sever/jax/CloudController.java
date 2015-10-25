@@ -40,10 +40,12 @@ public class CloudController {
 	private final String stateCollectionName = "state";
 	private final String pastCollectionName = "past";
 	private final String scheduleCollectionName = "schedule";
+	private final String photoCollectionName = "photo";
 
 	private DBCollection state_collection;
 	private DBCollection past_schedule_collection;
 	private DBCollection active_schedule_collection;
+	private DBCollection photo_collection;
 
 	private final String HARD_URL = "";
 
@@ -51,6 +53,7 @@ public class CloudController {
 		this.state_collection = DBUtils.getInstance().getDb().getCollection(stateCollectionName);
 		this.past_schedule_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
+		this.photo_collection = DBUtils.getInstance().getDb().getCollection(photoCollectionName);
 	}
 
 	public void createActiveSchedule(Schedule sc){
@@ -206,12 +209,29 @@ public class CloudController {
 		}
 	}
 
-	public void checkCurrentState(){
+	public State getCurrentState(String user){
+		return updateCurrentState(user)	;
+	}
+
+	public void updateAllCurrentStates(){
+		//ほんとはすべてのユーザIDに対して行う．今回は固定なのでuser1にしている．
+		updateCurrentState("user1");
+	}
+
+	private State updateCurrentState(String user){
 		try {
-			State current = getStateFromHardwareServer();
+			State current = getStateFromHardwareServer(user);
+			String photo = getPhotoFromHardwareServer(user);
+			DBObject o = new BasicDBObject();
+			o.put("data", photo);
+			photo_collection.save(o);
+			String photoId = o.get("_id").toString();
+			current.setPhotoId(photoId);
 			insertStateDB(current);
+			return current;
 		} catch (MonitorErrorException e) {
 			e.printStackTrace();
+			return new State();
 		}
 	}
 
@@ -235,7 +255,7 @@ public class CloudController {
 
 	private void insertStateDB(State s){
 		DBObject o = new BasicDBObject();
-		o.put("user", s.getUserId());
+		o.put("user", s.getUser());
 		o.put("date", s.getDate());
 		o.put("temp",s.getTemperature());
 		o.put("humid",s.getHumid());
@@ -251,12 +271,24 @@ public class CloudController {
 		col.save(o);
 	}
 
-	private State getStateFromHardwareServer() throws MonitorErrorException{
+
+	private State getStateFromHardwareServer(String user) throws MonitorErrorException{
 		State ret = new State();
 		Calendar current = Calendar.getInstance();
 		ret.setDate(current.getTimeInMillis());
-		//set the other values.
+		ret.setUser(user);
+		//get from HWS
+		//set the other values other than "photo"
+		int humid = 78;
+		int temp = 23;
+		ret.setHumid(humid);
+		ret.setTemperature(temp);
 		return ret;
+	}
+
+	private String getPhotoFromHardwareServer(String user) throws MonitorErrorException{
+
+		return "photo data";
 	}
 
 	private class WateringErrorException extends Exception {

@@ -3,15 +3,15 @@ package jp.cloudgarden.sever.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-//import org.bson.types.ObjectId;
-
 import com.mongodb.DBObject;
+//import org.bson.types.ObjectId;
+//import com.mongodb.DBObject;
+//import com.sun.jersey.core.util.Base64;
 
 @XmlRootElement
 public class State {
-	private int id;
-	private int userId;
+	private String id;
+	private String user;
 	private long date;
 	private int temperature;
 	private int humid;
@@ -19,28 +19,26 @@ public class State {
 
 
 
-	public State(int userId, long date, int temperature, int humid, String photoId) {
-		this.userId = userId;
+	public State(String user, long date, int temperature, int humid, String photoId) {
+		this.user = user;
 		this.date = date;
 		this.temperature = temperature;
 		this.humid = humid;
 		this.photoId = photoId;
 	}
 	public State(DBObject o){
-		this.id = (int) o.get("id");
-		this.userId = (int) o.get("user");
+		this.id = (String) o.get("id");
+		this.user = (String) o.get("user");
 		this.date = (long) o.get("date");
 		this.temperature =(int) o.get("temp");
 		this.humid =(int) o.get("humid");
-
-
 		this.photoId = (String) o.get("photoId");
 	}
-	public State(int id, int userId, long date, int temperature, int humid,
+	public State(String id, String user, long date, int temperature, int humid,
 			String photoId) {
 		super();
 		this.id = id;
-		this.userId = userId;
+		this.user = user;
 		this.date = date;
 		this.temperature = temperature;
 		this.humid = humid;
@@ -50,12 +48,12 @@ public class State {
 
 	}
 	@XmlElement(name="id")
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	@XmlElement(name="user")
-	public int getUserId() {
-		return userId;
+	public String getUser() {
+		return user;
 	}
 	@XmlElement(name="date")
 	public long getDate() {
@@ -74,11 +72,11 @@ public class State {
 		return photoId;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUser(String userId) {
+		this.user = userId;
 	}
 	public void setDate(long date) {
 		this.date = date;
@@ -96,11 +94,12 @@ public class State {
 	public String getJsonString(){
 		StringBuffer bf = new StringBuffer();
 		bf.append("{\"id\":\"").append(id).append("\",")//Tue Feb 01 14:33:27 JST 2022
-		.append("\"userId\":\"").append(userId).append("\",")
+		.append("\"user\":\"").append(user).append("\",")
 		.append("\"date\":\"").append(date).append("\",")
 		.append("\"temperature\":\"").append(temperature).append("\",")
 		.append("\"humid\":\"").append(humid).append("\",")
 		.append("\"photoId\":\"").append(photoId).append("\"}");
 		return bf.toString();
 	}
+
 }

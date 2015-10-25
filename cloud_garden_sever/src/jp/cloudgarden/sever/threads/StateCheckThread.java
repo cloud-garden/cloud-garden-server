@@ -16,7 +16,7 @@ public class StateCheckThread extends Thread {
 		isRunning = true;
 
 		while (isRunning) {
-			controller.checkSchedules();
+			controller.updateAllCurrentStates();
 
 			try {
 				Thread.sleep(intervalSec * 1000);
