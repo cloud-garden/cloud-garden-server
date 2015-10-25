@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,7 +34,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.header.OutBoundHeaders;
 import com.sun.jersey.core.util.Base64;
 
 public class CloudController {
