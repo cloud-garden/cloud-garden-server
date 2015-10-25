@@ -51,7 +51,7 @@ public class State {
 		return humid;
 	}
 	@XmlElement(name="photo")
-	public String getPhoto() {
+	public String getPhotoId() {
 		return photoId;
 	}
 
@@ -70,7 +70,8 @@ public class State {
 	public void setHumid(int humid) {
 		this.humid = humid;
 	}
-	public void setPhoto(String photo) {
-		this.photoId = photo;
+	public void setPhotoId(String photoId) {
+		this.photoId = photoId;
 	}
+
 }

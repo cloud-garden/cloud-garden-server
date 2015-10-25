@@ -35,6 +35,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.header.OutBoundHeaders;
 import com.sun.jersey.core.util.Base64;
 
 public class CloudController {
@@ -136,6 +137,12 @@ public class CloudController {
 	private State updateCurrentState(String user){
 		try {
 			State current = getStateFromHardwareServer(user);
+			String photo = getPhotoFromHardwareServer(user);
+			DBObject o = new BasicDBObject();
+			o.put("data", photo);
+			photo_collection.save(o);
+			String photoId = o.get("_id").toString();
+			current.setPhotoId(photoId);
 			insertStateDB(current);
 			return current;
 		} catch (MonitorErrorException e) {
@@ -169,7 +176,6 @@ public class CloudController {
 		o.put("date", s.getDate());
 		o.put("temp",s.getTemperature());
 		o.put("humid",s.getHumid());
-		o.put("photo", s.getPhoto());
 		state_collection.save(o);
 	}
 
@@ -181,6 +187,7 @@ public class CloudController {
 		col.save(o);
 	}
 
+
 	private State getStateFromHardwareServer(String user) throws MonitorErrorException{
 		State ret = new State();
 		Calendar current = Calendar.getInstance();
@@ -190,11 +197,14 @@ public class CloudController {
 		//set the other values other than "photo"
 		int humid = 78;
 		int temp = 23;
-		String photo = null;//ここの形式が分からない．
 		ret.setHumid(humid);
 		ret.setTemperature(temp);
-		ret.setPhoto(photo);
 		return ret;
+	}
+
+	private String getPhotoFromHardwareServer(String user) throws MonitorErrorException{
+
+		return "photo data";
 	}
 
 	private class WateringErrorException extends Exception {
