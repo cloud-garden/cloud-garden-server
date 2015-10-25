@@ -4,9 +4,6 @@ package jp.cloudgarden.sever.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.mongodb.DBObject;
-//import org.bson.types.ObjectId;
-//import com.mongodb.DBObject;
-//import com.sun.jersey.core.util.Base64;
 
 @XmlRootElement
 public class State {
@@ -16,8 +13,6 @@ public class State {
 	private int temperature;
 	private int humid;
 	private String photoId;//ここでは写真のIDだけ保持してればいいかもしれない．
-
-
 
 	public State(String user, long date, int temperature, int humid, String photoId) {
 		this.user = user;

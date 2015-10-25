@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -168,7 +167,7 @@ public class JaxAdapter {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastNextScheduleList")
-	public Response getPastNextScheduleNextList(@QueryParam("user") String userId,@QueryParam("date") long date){
+	public Response getPastNextScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
 		List<Schedule> past = controller.getPastNextScheduleList(userId,date);
 		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
 		if(past == null){

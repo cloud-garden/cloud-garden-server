@@ -71,8 +71,10 @@ public class CloudController {
 			Schedule sc = new Schedule(o);
 			//カレンダー形式へ変換
 			cal.setTimeInMillis(sc.getDate());
-
-			list.add(sc);
+			//一日の一番最初の情報が対象の情報であると仮定
+			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+				list.add(sc);
+			}
 		}
 		//データがまったくなかった場合
 		if(list.size()==0){
@@ -93,7 +95,7 @@ public class CloudController {
 			//カレンダー形式へ変換
 			cal.setTimeInMillis(sc.getDate());
 			//一日の一番最初の情報が対象の情報であると仮定
-			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE+1))){
 				list.add(sc);
 			}
 		}
