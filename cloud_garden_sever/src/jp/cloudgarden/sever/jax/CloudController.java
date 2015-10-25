@@ -53,10 +53,96 @@ public class CloudController {
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 	}
 
-
 	public void createActiveSchedule(Schedule sc){
 		insertScheduleDB(active_schedule_collection, sc);
 	}
+
+	public List<Schedule> getPastPreviousScheduleList(String user,long date){
+		List<Schedule> list = new ArrayList<Schedule>();
+		DBObject query = new BasicDBObject();
+		Calendar cal = null,target_cal = null;
+		target_cal.setTimeInMillis(date);
+		query.put("user", user);
+		DBCursor cusor = past_schedule_collection.find(query);
+		for(DBObject o : cusor){
+			Schedule sc = new Schedule(o);
+			//カレンダー形式へ変換
+			cal.setTimeInMillis(sc.getDate());
+
+			list.add(sc);
+		}
+		//データがまったくなかった場合
+		if(list.size()==0){
+			return null;
+		}
+		return list;
+	}
+
+	public List<Schedule> getPastNextScheduleList(String user,long date){
+		List<Schedule> list = new ArrayList<Schedule>();
+		DBObject query = new BasicDBObject();
+		Calendar cal = null,target_cal = null;
+		target_cal.setTimeInMillis(date);
+		query.put("user", user);
+		DBCursor cusor = past_schedule_collection.find(query);
+		for(DBObject o : cusor){
+			Schedule sc = new Schedule(o);
+			//カレンダー形式へ変換
+			cal.setTimeInMillis(sc.getDate());
+			//一日の一番最初の情報が対象の情報であると仮定
+			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+				list.add(sc);
+			}
+		}
+
+		//データがまったくなかった場合
+		if(list.size()==0){
+			return null;
+		}
+
+		return list;
+	}
+
+	public State getPastPreviousState(String user,long date){
+		DBObject query = new BasicDBObject();
+		Calendar cal = null,target_cal = null;
+		target_cal.setTimeInMillis(date);
+		query.put("user", user);
+		DBCursor cusor = state_collection.find(query);
+		for(DBObject o : cusor){
+			State st = new State(o);
+			//カレンダー形式へ変換
+			cal.setTimeInMillis(st.getDate());
+			//指定の日付の状態があれば返す
+			//一日の一番最初の情報が対象の情報であると仮定
+			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+				return st;
+			}
+		}
+		//指定の日付が存在しない場合
+		return null;
+	}
+
+	public State getPastNextState(String user,long date){
+		DBObject query = new BasicDBObject();
+		Calendar cal = null,target_cal = null;
+		target_cal.setTimeInMillis(date);
+		query.put("user", user);
+		DBCursor cusor = state_collection.find(query);
+		for(DBObject o : cusor){
+			State st = new State(o);
+			//カレンダー形式へ変換
+			cal.setTimeInMillis(st.getDate());
+			//指定の日付の状態があれば返す
+			//一日の一番最初の情報が対象の情報であると仮定
+			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE+1))){
+				return st;
+			}
+		}
+		//指定の日付が存在しない場合
+		return null;
+	}
+
 
 	public List<Schedule> getActiveScheduleList(String user){
 		List<Schedule> list = new ArrayList<Schedule>();
@@ -127,7 +213,6 @@ public class CloudController {
 		} catch (MonitorErrorException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void executeWatering() throws WateringErrorException{
@@ -148,14 +233,13 @@ public class CloudController {
 		}
 	}
 
-
 	private void insertStateDB(State s){
 		DBObject o = new BasicDBObject();
 		o.put("user", s.getUserId());
 		o.put("date", s.getDate());
 		o.put("temp",s.getTemperature());
 		o.put("humid",s.getHumid());
-		o.put("photo", s.getPhoto());
+		o.put("photoId", s.getPhotoId());
 		state_collection.save(o);
 	}
 

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import jp.cloudgarden.sever.model.PhotoIdList;
 import jp.cloudgarden.sever.model.Schedule;
+import jp.cloudgarden.sever.model.State;
 import jp.cloudgarden.sever.threads.ScheduleCheckTread;
 
 @Path("/")
@@ -100,28 +102,79 @@ public class JaxAdapter {
 	}
 
 	/**
-	 * 過去の作物状態の配列を返す
+	 * 過去の作物状態(指定日の前の日)の配列を返す
 	 * @param userId ユーザID
+	 * @param long    日付
 	 * @return 過去の作物状態の配列
 	 */
-	@GET
+	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastStateList")
-	public Response getPastStateList(@QueryParam("user") String userId){
-
-		return null;
+	@Path("/getPastPreviousStateList")
+	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
+		State past = controller.getPastPreviousState(userId,date);
+		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
+		if(past == null){
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+		String ret = "{\"status\":["+past.getJsonString()+"]}";
+		return Response.status(200).entity(ret).build();
 	}
 
 	/**
-	 * 過去の処理履歴の配列を返す．
+	 * 過去の作物状態（指定日の後の日）の配列を返す
+	 * @param userId ユーザID
+	 * @param long    日付
+	 * @return 過去の作物状態の配列
+	 */
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getPastNextStateList")
+	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
+		State past = controller.getPastNextState(userId,date);
+		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
+		if(past == null){
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+		String ret = "{\"status\":["+past.getJsonString()+"]}";
+		return Response.status(200).entity(ret).build();
+	}
+
+	/**
+	 * 過去の処理履歴(指定日の前の日)の配列を返す．
 	 * @param userId  ユーザID
+	 * @param long    日付
 	 * @return 過去の処理履歴の配列．
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastScheduleList")
-	public Response getPastScheduleList(@QueryParam("user") String userId){
-		return null;
+	@Path("/getPastPreviousScheduleList")
+	public Response getPastPreviousScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
+
+		List<Schedule> past = controller.getPastPreviousScheduleList(userId,date);
+		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
+		if(past == null){
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+		String ret = "{\"schedule\":["+past.get(0).getJsonString()+"]}";
+		return Response.status(200).entity(ret).build();
+	}
+	/**
+	 * 過去の処理履歴（指定日の後の日）の配列を返す．
+	 * @param userId  ユーザID
+	 * @param long    日付
+	 * @return 過去の処理履歴の配列．
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getPastNextScheduleList")
+	public Response getPastNextScheduleNextList(@QueryParam("user") String userId,@QueryParam("date") long date){
+		List<Schedule> past = controller.getPastNextScheduleList(userId,date);
+		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
+		if(past == null){
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+		String ret = "{\"schedule\":["+past.get(0).getJsonString()+"]}";
+		return Response.status(200).entity(ret).build();
 	}
 
 	/**
