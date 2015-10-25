@@ -41,10 +41,12 @@ public class CloudController {
 	private final String stateCollectionName = "state";
 	private final String pastCollectionName = "past";
 	private final String scheduleCollectionName = "schedule";
+	private final String photoCollectionName = "photo";
 
 	private DBCollection state_collection;
 	private DBCollection past_schedule_collection;
 	private DBCollection active_schedule_collection;
+	private DBCollection photo_collection;
 
 	private final String HARD_URL = "";
 
@@ -52,6 +54,7 @@ public class CloudController {
 		this.state_collection = DBUtils.getInstance().getDb().getCollection(stateCollectionName);
 		this.past_schedule_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
+		this.photo_collection = DBUtils.getInstance().getDb().getCollection(photoCollectionName);
 	}
 
 
