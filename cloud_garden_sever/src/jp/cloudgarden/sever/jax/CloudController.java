@@ -63,16 +63,14 @@ public class CloudController {
 	public List<Schedule> getPastPreviousScheduleList(String user,long date){
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
-		Calendar cal = null,target_cal = null;
-		target_cal.setTimeInMillis(date);
+		long sub;
 		query.put("user", user);
 		DBCursor cusor = past_schedule_collection.find(query);
 		for(DBObject o : cusor){
 			Schedule sc = new Schedule(o);
-			//カレンダー形式へ変換
-			cal.setTimeInMillis(sc.getDate());
+			sub = sc.getDate() - date;
 			//一日の一番最初の情報が対象の情報であると仮定
-			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+			if(-24*60*60*1000<=sub&&sub<=0){
 				list.add(sc);
 			}
 		}
@@ -86,16 +84,14 @@ public class CloudController {
 	public List<Schedule> getPastNextScheduleList(String user,long date){
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
-		Calendar cal = null,target_cal = null;
-		target_cal.setTimeInMillis(date);
 		query.put("user", user);
+		long sub;
 		DBCursor cusor = past_schedule_collection.find(query);
 		for(DBObject o : cusor){
 			Schedule sc = new Schedule(o);
-			//カレンダー形式へ変換
-			cal.setTimeInMillis(sc.getDate());
+			sub = sc.getDate() - date;
 			//一日の一番最初の情報が対象の情報であると仮定
-			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE+1))){
+			if(0<=sub&&sub<=24*60*60*1000){
 				list.add(sc);
 			}
 		}
@@ -110,17 +106,16 @@ public class CloudController {
 
 	public State getPastPreviousState(String user,long date){
 		DBObject query = new BasicDBObject();
-		Calendar cal = null,target_cal = null;
-		target_cal.setTimeInMillis(date);
+		long sub;
 		query.put("user", user);
 		DBCursor cusor = state_collection.find(query);
 		for(DBObject o : cusor){
 			State st = new State(o);
-			//カレンダー形式へ変換
-			cal.setTimeInMillis(st.getDate());
+			//指定日の状態
+			sub = st.getDate() - date;
 			//指定の日付の状態があれば返す
 			//一日の一番最初の情報が対象の情報であると仮定
-			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE-1))){
+			if(-24*60*60*1000<=sub&&sub<=0){
 				return st;
 			}
 		}
@@ -130,19 +125,16 @@ public class CloudController {
 
 
 	public State getPastNextState(String user,long date){
-        int i=2;
 		DBObject query = new BasicDBObject();
-		Calendar cal = null,target_cal = null;
-		target_cal.setTimeInMillis(date);
+		long sub;
 		query.put("user", user);
 		DBCursor cusor = state_collection.find(query);
 		for(DBObject o : cusor){
 			State st = new State(o);
-			//カレンダー形式へ変換
-			cal.setTimeInMillis(st.getDate());
+			sub = st.getDate() - date;
 			//指定の日付の状態があれば返す
 			//一日の一番最初の情報が対象の情報であると仮定
-			if((cal.YEAR==target_cal.YEAR)&&(cal.MONTH==target_cal.MONTH)&&(cal.DATE==(target_cal.DATE+1))){
+			if(0<=sub&&sub<=24*60*60*1000){
 				return st;
 			}
 		}

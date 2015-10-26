@@ -105,17 +105,16 @@ public class JaxAdapter {
 	 * @param long    日付
 	 * @return 過去の作物状態の配列
 	 */
-	@POST
+	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastPreviousStateList")
+	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastPreviousState(userId,date);
-		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
+		//もしも、nullが入っていればデータ取得に失敗したのでエラー
 		if(past == null){
-			return Response.status(403).entity(ERR_STATUS).build();
+			return Response.status(403).entity(null).build();
 		}
-		String ret = "{\"status\":["+past.getJsonString()+"]}";
-		return Response.status(200).entity(ret).build();
+		return Response.status(200).entity(past).build();
 	}
 
 	/**
@@ -124,17 +123,16 @@ public class JaxAdapter {
 	 * @param long    日付
 	 * @return 過去の作物状態の配列
 	 */
-	@POST
+	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastNextStateList")
+	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastNextState(userId,date);
 		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
 		if(past == null){
-			return Response.status(403).entity(ERR_STATUS).build();
+			return Response.status(403).entity(null).build();
 		}
-		String ret = "{\"status\":["+past.getJsonString()+"]}";
-		return Response.status(200).entity(ret).build();
+		return Response.status(200).entity(past).build();
 	}
 
 	/**
@@ -147,11 +145,10 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousScheduleList")
 	public Response getPastPreviousScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
-		int a=2;
 		List<Schedule> past = controller.getPastPreviousScheduleList(userId,date);
 		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
 		if(past == null){
-			return Response.status(403).entity(ERR_STATUS).build();
+			return Response.status(403).entity(null).build();
 		}
 		String ret = "{\"schedule\":["+past.get(0).getJsonString()+"]}";
 		return Response.status(200).entity(ret).build();
@@ -169,7 +166,7 @@ public class JaxAdapter {
 		List<Schedule> past = controller.getPastNextScheduleList(userId,date);
 		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
 		if(past == null){
-			return Response.status(403).entity(ERR_STATUS).build();
+			return Response.status(403).entity(null).build();
 		}
 		String ret = "{\"schedule\":["+past.get(0).getJsonString()+"]}";
 		return Response.status(200).entity(ret).build();
