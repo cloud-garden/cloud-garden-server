@@ -3,7 +3,7 @@
 <project default="generate.service" basedir=".">
 
 	<!-- warファイルの設定 -->
-	<property name="service.name" value="cloud_garden_sever" />
+	<property name="service.name" value="cloud_garden_server" />
 	<property name="war.home" value="C:/pbl/tomcat/webapps" />
 	<property name="dest.dir" value="build" />
 	<property name="dest.dir.web" value="${dest.dir}/web" />
@@ -58,7 +58,7 @@
 		<copy file="web.xml" tofile="${dest.dir.webinf}/web.xml" />
 
 		<!-- jarタスクによってwarファイルを作成 -->
-		<jar destfile="${service.name}.war" basedir="${dest.dir}" />	
+		<jar destfile="${service.name}.war" basedir="${dest.dir}" />
 
 	</target>
 </project>
