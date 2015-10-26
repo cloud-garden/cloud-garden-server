@@ -100,20 +100,16 @@ public class JaxAdapter {
 	}
 
 	/**
-	 * 過去の作物状態(指定日の前の日)の配列を返す
+	 * 指定日の前の日の作物状態を返す
 	 * @param userId ユーザID
 	 * @param long    日付
-	 * @return 過去の作物状態の配列
+	 * @return 指定日の前の日の作物状態の配列.
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastPreviousState(userId,date);
-		//もしも、nullが入っていればデータ取得に失敗したのでエラー
-		if(past == null){
-			return Response.status(403).entity(null).build();
-		}
 		return Response.status(200).entity(past).build();
 	}
 
