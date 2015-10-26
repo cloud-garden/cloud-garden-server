@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
 
-	<display-name>cloudgardesever</display-name>
+	<display-name>cloudgardeserver</display-name>
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
@@ -13,16 +13,16 @@
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>cloudgardensever</servlet-name>
+		<servlet-name>cloudgardenserver</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>jp.cloudgarden.sever</param-value>
+			<param-value>jp.cloudgarden.server</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>cloudgardensever</servlet-name>
+		<servlet-name>cloudgardenserver</servlet-name>
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 

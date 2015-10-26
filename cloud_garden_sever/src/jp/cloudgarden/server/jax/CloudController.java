@@ -104,6 +104,19 @@ public class CloudController {
 		return list;
 	}
 
+	public List<Schedule> getPastScheduleList(String user){
+		List<Schedule> list = new ArrayList<Schedule>();
+		DBObject query = new BasicDBObject();
+		query.put("user", user);
+		DBCursor cusor = past_schedule_collection.find(query);
+		for(DBObject o : cusor){
+			Schedule sc = new Schedule(o);
+			list.add(sc);
+		}
+		Collections.reverse(list);
+		return list;
+	}
+
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);

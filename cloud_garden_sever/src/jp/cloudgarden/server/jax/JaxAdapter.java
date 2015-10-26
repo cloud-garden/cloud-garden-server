@@ -175,6 +175,28 @@ public class JaxAdapter {
 	}
 
 	/**
+	 * 過去の処理履歴の配列を返す．
+	 * @param userId  ユーザID
+	 * @return 過去の処理履歴の配列．日付が現在に近い順にソート済み．
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getPastScheduleList")
+	public Response getPastScheduleList(@QueryParam("user") String userId){
+		List<Schedule> list = controller.getPastScheduleList(userId);
+		if(list.size() > 1){
+			Schedule[] ret = list.toArray(new Schedule[0]);;
+			return Response.status(200).entity(ret).build();
+		}else if(list.size() == 1){
+			String ret = "{\"schedule\":["+list.get(0).getJsonString()+"]}";
+			return Response.status(200).entity(ret).build();
+		}else{
+			String ret = "{\"schedule\":[]}";
+			return Response.status(200).entity(ret).build();
+		}
+	}
+
+	/**
 	 * start schedule check.
 	 * @return OK
 	 */
