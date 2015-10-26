@@ -306,6 +306,26 @@ public class CloudController {
 		return "photo data";
 	}
 
+	public ByteArrayOutputStream getPhoto(String id) {
+		DBObject query = new BasicDBObject("_id", new ObjectId(id));
+		DBObject o = photo_collection.findOne(query);
+		if (o == null) {
+			return null;
+		}
+		String src = (String)o.get("data");
+		src = src.split(",")[1];
+		byte[] bytes = Base64.decode(src);
+		try {
+			BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(bytes));
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();;
+			ImageIO.write(bImage, "png", baos);
+			return baos;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private class WateringErrorException extends Exception {
 		private static final long serialVersionUID = 1234L;
 	}
@@ -362,27 +382,6 @@ public class CloudController {
 		return id;
 	}
 
-
-	public ByteArrayOutputStream getPhoto(String id) {
-		DBObject query = new BasicDBObject("_id", new ObjectId(id));
-		DBObject o = active_schedule_collection.findOne(query);
-		if (o == null) {
-			return null;
-		}
-		String src = (String)o.get("src");
-		src = src.split(",")[1];
-		byte[] bytes = Base64.decode(src);
-		try {
-			BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(bytes));
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();;
-			ImageIO.write(bImage, "png", baos);
-			return baos;
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	public List<String> getPhotoList(int n) {
 		List<String> list = new ArrayList<>();

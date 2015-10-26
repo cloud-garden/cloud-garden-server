@@ -197,6 +197,22 @@ public class JaxAdapter {
 	}
 
 	/**
+	 * @param id 画像のID
+	 * @return 画像ファイル
+	 */
+	@GET
+	@Produces("image/png")
+	@Path("/getPhoto")
+	public Response getPhoto(@PathParam("id") String id) {
+		ByteArrayOutputStream baos = controller.getPhoto(id);
+		if (baos == null) {
+			return Response.status(403).entity(ERR_STATUS).build();
+		}
+		byte[] photoData = baos.toByteArray();
+		return Response.ok(new ByteArrayInputStream(photoData)).build();
+	}
+
+	/**
 	 * start schedule check.
 	 * @return OK
 	 */
@@ -297,17 +313,17 @@ public class JaxAdapter {
 	 * @param 写真のid
 	 * @return png画像
 	 */
-	@GET
-	@Produces("image/png")
-	@Path("/photo/{id}.png")
-	public Response getPhoto(@PathParam("id") String id) {
-		ByteArrayOutputStream baos = controller.getPhoto(id);
-		if (baos == null) {
-			return Response.status(403).entity("<error>photo not found</error>").build();
-		}
-		byte[] photoData = baos.toByteArray();
-		return Response.ok(new ByteArrayInputStream(photoData)).build();
-	}
+//	@GET
+//	@Produces("image/png")
+//	@Path("/photo/{id}.png")
+//	public Response getPhoto(@PathParam("id") String id) {
+//		ByteArrayOutputStream baos = controller.getPhoto(id);
+//		if (baos == null) {
+//			return Response.status(403).entity("<error>photo not found</error>").build();
+//		}
+//		byte[] photoData = baos.toByteArray();
+//		return Response.ok(new ByteArrayInputStream(photoData)).build();
+//	}
 
 
 	/**
