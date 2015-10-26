@@ -105,40 +105,45 @@ public class CloudController {
 	}
 
 	public State getPastPreviousState(String user,long date){
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.setTimeInMillis(date);
+
 		DBObject query = new BasicDBObject();
-		long sub;
 		query.put("user", user);
 		DBCursor cusor = state_collection.find(query);
 		for(DBObject o : cusor){
 			State st = new State(o);
-			//指定日の状態
-			sub = st.getDate() - date;
-			//指定の日付の状態があれば返す
-			//一日の一番最初の情報が対象の情報であると仮定
-			if(-24*60*60*1000<=sub&&sub<=0){
+			Calendar target = Calendar.getInstance();
+			target.setTimeInMillis(st.getDate());
+			target.add(Calendar.DAY_OF_MONTH, 1);
+			if(target.get(Calendar.YEAR) == givenDate.get(Calendar.YEAR)
+					&& target.get(Calendar.MONTH) == givenDate.get(Calendar.MONTH)
+					&& target.get(Calendar.DATE) == givenDate.get(Calendar.DATE)){
 				return st;
 			}
 		}
-		//指定の日付が存在しない場合
 		return null;
 	}
 
 
 	public State getPastNextState(String user,long date){
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.setTimeInMillis(date);
+
 		DBObject query = new BasicDBObject();
-		long sub;
 		query.put("user", user);
 		DBCursor cusor = state_collection.find(query);
 		for(DBObject o : cusor){
 			State st = new State(o);
-			sub = st.getDate() - date;
-			//指定の日付の状態があれば返す
-			//一日の一番最初の情報が対象の情報であると仮定
-			if(0<=sub&&sub<=24*60*60*1000){
+			Calendar target = Calendar.getInstance();
+			target.setTimeInMillis(st.getDate());
+			target.add(Calendar.DAY_OF_MONTH, -1);
+			if(target.get(Calendar.YEAR) == givenDate.get(Calendar.YEAR)
+					&& target.get(Calendar.MONTH) == givenDate.get(Calendar.MONTH)
+					&& target.get(Calendar.DATE) == givenDate.get(Calendar.DATE)){
 				return st;
 			}
 		}
-		//指定の日付が存在しない場合
 		return null;
 	}
 
