@@ -1,4 +1,4 @@
-package jp.cloudgarden.sever.model;
+package jp.cloudgarden.server.model;
 
 import java.util.Date;
 

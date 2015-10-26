@@ -1,4 +1,4 @@
-package jp.cloudgarden.sever.jax;
+package jp.cloudgarden.server.jax;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -16,12 +16,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import jp.cloudgarden.sever.model.Comment;
-import jp.cloudgarden.sever.model.Like;
-import jp.cloudgarden.sever.model.Report;
-import jp.cloudgarden.sever.model.Schedule;
-import jp.cloudgarden.sever.model.State;
-import jp.cloudgarden.sever.util.DBUtils;
+import jp.cloudgarden.server.model.Comment;
+import jp.cloudgarden.server.model.Like;
+import jp.cloudgarden.server.model.Report;
+import jp.cloudgarden.server.model.Schedule;
+import jp.cloudgarden.server.model.State;
+import jp.cloudgarden.server.util.DBUtils;
 
 import org.bson.types.ObjectId;
 import org.w3c.dom.Document;

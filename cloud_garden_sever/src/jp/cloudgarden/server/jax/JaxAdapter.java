@@ -1,10 +1,11 @@
-package jp.cloudgarden.sever.jax;
+package jp.cloudgarden.server.jax;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -15,10 +16,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import jp.cloudgarden.sever.model.PhotoIdList;
-import jp.cloudgarden.sever.model.Schedule;
-import jp.cloudgarden.sever.model.State;
-import jp.cloudgarden.sever.threads.ScheduleCheckTread;
+
+import jp.cloudgarden.server.model.PhotoIdList;
+import jp.cloudgarden.server.model.Schedule;
+import jp.cloudgarden.server.model.State;
+import jp.cloudgarden.server.threads.ScheduleCheckTread;
 
 @Path("/")
 public class JaxAdapter {

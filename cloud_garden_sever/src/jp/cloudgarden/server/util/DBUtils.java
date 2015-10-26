@@ -1,4 +1,4 @@
-package jp.cloudgarden.sever.util;
+package jp.cloudgarden.server.util;
 
 import java.net.UnknownHostException;
 
