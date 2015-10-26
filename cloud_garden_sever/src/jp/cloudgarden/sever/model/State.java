@@ -85,7 +85,6 @@ public class State {
 	public void setPhotoId(String photoId) {
 		this.photoId = photoId;
 	}
-
 	public String getJsonString(){
 		StringBuffer bf = new StringBuffer();
 		bf.append("{\"id\":\"").append(id).append("\",")//Tue Feb 01 14:33:27 JST 2022

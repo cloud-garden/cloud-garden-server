@@ -128,7 +128,9 @@ public class CloudController {
 		return null;
 	}
 
+
 	public State getPastNextState(String user,long date){
+        int i;
 		DBObject query = new BasicDBObject();
 		Calendar cal = null,target_cal = null;
 		target_cal.setTimeInMillis(date);
