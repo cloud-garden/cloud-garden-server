@@ -61,46 +61,46 @@ public class CloudController {
 	}
 
 	public List<Schedule> getPastPreviousScheduleList(String user,long date){
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.setTimeInMillis(date);
+
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
-		long sub;
 		query.put("user", user);
 		DBCursor cusor = past_schedule_collection.find(query);
+
 		for(DBObject o : cusor){
 			Schedule sc = new Schedule(o);
-			sub = sc.getDate() - date;
-			//一日の一番最初の情報が対象の情報であると仮定
-			if(-24*60*60*1000<=sub&&sub<=0){
+			Calendar target = Calendar.getInstance();
+			target.setTimeInMillis(sc.getDate());
+			target.add(Calendar.DAY_OF_MONTH, 1);
+			if(isSameDate(target, givenDate)){
 				list.add(sc);
 			}
 		}
-		//データがまったくなかった場合
-		if(list.size()==0){
-			return null;
-		}
+		Collections.sort(list);
 		return list;
 	}
 
 	public List<Schedule> getPastNextScheduleList(String user,long date){
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.setTimeInMillis(date);
+
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		long sub;
 		DBCursor cusor = past_schedule_collection.find(query);
+
 		for(DBObject o : cusor){
 			Schedule sc = new Schedule(o);
-			sub = sc.getDate() - date;
-			//一日の一番最初の情報が対象の情報であると仮定
-			if(0<=sub&&sub<=24*60*60*1000){
+			Calendar target = Calendar.getInstance();
+			target.setTimeInMillis(sc.getDate());
+			target.add(Calendar.DAY_OF_MONTH, -1);
+			if(isSameDate(target, givenDate)){
 				list.add(sc);
 			}
 		}
-
-		//データがまったくなかった場合
-		if(list.size()==0){
-			return null;
-		}
-
+		Collections.sort(list);
 		return list;
 	}
 
@@ -116,9 +116,7 @@ public class CloudController {
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(st.getDate());
 			target.add(Calendar.DAY_OF_MONTH, 1);
-			if(target.get(Calendar.YEAR) == givenDate.get(Calendar.YEAR)
-					&& target.get(Calendar.MONTH) == givenDate.get(Calendar.MONTH)
-					&& target.get(Calendar.DATE) == givenDate.get(Calendar.DATE)){
+			if(isSameDate(target, givenDate)){
 				return st;
 			}
 		}
@@ -138,15 +136,18 @@ public class CloudController {
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(st.getDate());
 			target.add(Calendar.DAY_OF_MONTH, -1);
-			if(target.get(Calendar.YEAR) == givenDate.get(Calendar.YEAR)
-					&& target.get(Calendar.MONTH) == givenDate.get(Calendar.MONTH)
-					&& target.get(Calendar.DATE) == givenDate.get(Calendar.DATE)){
+			if(isSameDate(target, givenDate)){
 				return st;
 			}
 		}
 		return null;
 	}
 
+	private boolean isSameDate(Calendar cal1 , Calendar cal2){
+		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+				&& cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+				&& cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
+	}
 
 	public List<Schedule> getActiveScheduleList(String user){
 		List<Schedule> list = new ArrayList<Schedule>();
