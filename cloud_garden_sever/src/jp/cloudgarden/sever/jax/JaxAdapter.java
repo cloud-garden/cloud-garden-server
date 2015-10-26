@@ -124,10 +124,6 @@ public class JaxAdapter {
 	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastNextState(userId,date);
-		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
-		if(past == null){
-			return Response.status(403).entity(null).build();
-		}
 		return Response.status(200).entity(past).build();
 	}
 
