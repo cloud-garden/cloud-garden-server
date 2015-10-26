@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DBObject;
-
+//データ形式が間違っていたら修正
 @XmlRootElement
 public class Schedule implements Comparable<Schedule>{
 	private String id;

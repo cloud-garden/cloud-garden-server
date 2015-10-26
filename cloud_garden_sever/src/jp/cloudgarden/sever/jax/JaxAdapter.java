@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -16,7 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import jp.cloudgarden.sever.model.PhotoIdList;
 import jp.cloudgarden.sever.model.Schedule;
 import jp.cloudgarden.sever.model.State;
@@ -149,7 +147,7 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousScheduleList")
 	public Response getPastPreviousScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
-
+		int a=2;
 		List<Schedule> past = controller.getPastPreviousScheduleList(userId,date);
 		//もしも、nullがは言っていればデータ取得に失敗したのでエラー
 		if(past == null){

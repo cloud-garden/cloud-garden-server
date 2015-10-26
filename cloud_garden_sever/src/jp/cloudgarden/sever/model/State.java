@@ -21,6 +21,7 @@ public class State {
 		this.humid = humid;
 		this.photoId = photoId;
 	}
+	//データベース操作のため追加
 	public State(DBObject o){
 		this.id = (String) o.get("id");
 		this.user = (String) o.get("user");
