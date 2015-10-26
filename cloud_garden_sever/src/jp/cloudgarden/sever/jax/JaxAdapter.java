@@ -103,7 +103,7 @@ public class JaxAdapter {
 	 * 指定日の前の日の作物状態を返す
 	 * @param userId ユーザID
 	 * @param long    日付
-	 * @return 指定日の前の日の作物状態の配列.
+	 * @return 指定日の前の日の作物状態の配列.ない場合はnull
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
@@ -114,10 +114,10 @@ public class JaxAdapter {
 	}
 
 	/**
-	 * 過去の作物状態（指定日の後の日）の配列を返す
+	 * 指定日の後の日の作物状態を返す
 	 * @param userId ユーザID
 	 * @param long    日付
-	 * @return 過去の作物状態の配列
+	 * @return 過去の作物状態の配列．ない場合はnull
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
