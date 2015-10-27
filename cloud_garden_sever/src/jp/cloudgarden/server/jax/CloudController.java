@@ -67,9 +67,9 @@ public class CloudController {
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = past_schedule_collection.find(query);
+		DBCursor cursor = past_schedule_collection.find(query);
 
-		for(DBObject o : cusor){
+		for(DBObject o : cursor){
 			Schedule sc = new Schedule(o);
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(sc.getDate());
@@ -89,9 +89,9 @@ public class CloudController {
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = past_schedule_collection.find(query);
+		DBCursor cursor = past_schedule_collection.find(query);
 
-		for(DBObject o : cusor){
+		for(DBObject o : cursor){
 			Schedule sc = new Schedule(o);
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(sc.getDate());
@@ -108,8 +108,8 @@ public class CloudController {
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = past_schedule_collection.find(query);
-		for(DBObject o : cusor){
+		DBCursor cursor = past_schedule_collection.find(query);
+		for(DBObject o : cursor){
 			Schedule sc = new Schedule(o);
 			list.add(sc);
 		}
@@ -123,8 +123,8 @@ public class CloudController {
 
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = state_collection.find(query);
-		for(DBObject o : cusor){
+		DBCursor cursor = state_collection.find(query);
+		for(DBObject o : cursor){
 			State st = new State(o);
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(st.getDate());
@@ -143,8 +143,8 @@ public class CloudController {
 
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = state_collection.find(query);
-		for(DBObject o : cusor){
+		DBCursor cursor = state_collection.find(query);
+		for(DBObject o : cursor){
 			State st = new State(o);
 			Calendar target = Calendar.getInstance();
 			target.setTimeInMillis(st.getDate());
@@ -166,8 +166,8 @@ public class CloudController {
 		List<Schedule> list = new ArrayList<Schedule>();
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
-		DBCursor cusor = active_schedule_collection.find(query);
-		for(DBObject o : cusor){
+		DBCursor cursor = active_schedule_collection.find(query);
+		for(DBObject o : cursor){
 			Schedule sc = new Schedule(o);
 			list.add(sc);
 		}
@@ -187,8 +187,8 @@ public class CloudController {
 	public void checkSchedules(){
 		Calendar currentTime = Calendar.getInstance();
 
-		DBCursor cusor = active_schedule_collection.find();
-		for(DBObject o : cusor){
+		DBCursor cursor = active_schedule_collection.find();
+		for(DBObject o : cursor){
 			long date = (long) o.get("date");
 			boolean isRoutine = (boolean) o.get("isRoutine");
 			Calendar scheduledTime = Calendar.getInstance();

@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -16,7 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import jp.cloudgarden.server.model.PhotoIdList;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.State;
@@ -85,7 +83,6 @@ public class JaxAdapter {
 		}else{
 			return Response.status(403).entity(ERR_STATUS).build();
 		}
-
 	}
 
 	/**
