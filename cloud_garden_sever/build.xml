@@ -11,7 +11,7 @@
 	<property name="dest.dir.webinf" value="${dest.dir}/WEB-INF" />
 	<property name="dest.dir.webinf.classes" value="${dest.dir.webinf}/classes" />
 	<property name="dest.dir.webinf.lib" value="${dest.dir.webinf}/lib" />
-
+	<property name="tomcat.lib" value="${war.home}/../lib" />
 
 	<!-- クリーン -->
 	<target name="clean">
@@ -45,6 +45,9 @@
 			<fileset dir="lib">
 				<include name="*.jar" />
 			</fileset>
+			<fileset dir="${tomcat.lib}">
+				<include name="*.jar" />
+			</fileset>
 		</path>
 
 		<!-- コンパイル．作業ディレクトリにクラス生成．クラスパスは上で定義したもの -->
@@ -60,5 +63,7 @@
 		<!-- jarタスクによってwarファイルを作成 -->
 		<jar destfile="${service.name}.war" basedir="${dest.dir}" />
 
+		<!-- warデプロイ -->
+		<copy file="${service.name}.war" tofile="${war.home}/${service.name}.war" />
 	</target>
 </project>
