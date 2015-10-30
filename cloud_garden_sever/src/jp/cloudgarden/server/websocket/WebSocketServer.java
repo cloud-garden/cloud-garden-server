@@ -9,7 +9,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/api/ws")
-public class WebSocket {
+public class WebSocketServer {
 
 	private Session session;
 
@@ -18,7 +18,6 @@ public class WebSocket {
 		this.session = session;
 	}
 
-	// 切断時の処理
 	@OnClose
 	public void onClose(Session session) {
 		this.session = null;
@@ -28,12 +27,29 @@ public class WebSocket {
 	@OnMessage
 	public void onMessage(String msg) {
 		System.out.println("send:" + msg);
+		sendMessage("Sever gets your message! " + msg);
 	}
 
-	public void setdMessage(String msg){
+	public void getTempAndHumid(){
+		String msg = "{ method: \"getTemperatureAndHumidty\"}";
+		sendMessage(msg);
+	}
+
+	public void executeWatering(){
+		String msg = "{ method: \"executeWatering\"}";
+		sendMessage(msg);
+	}
+
+	public void getImage(){
+		String msg = "{ method: \"getImage\"}";
+		sendMessage(msg);
+	}
+
+	private void sendMessage(String msg){
 		try {
 			this.session.getBasicRemote().sendText(msg);
 		} catch (IOException e) {
 		}
 	}
+
 }

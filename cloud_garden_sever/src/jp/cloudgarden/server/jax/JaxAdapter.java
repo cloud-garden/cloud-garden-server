@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -15,10 +16,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import jp.cloudgarden.server.model.PhotoIdList;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.State;
 import jp.cloudgarden.server.threads.ScheduleCheckTread;
+import jp.cloudgarden.server.websocket.WebSocketServer;
 
 @Path("/")
 public class JaxAdapter {
@@ -243,6 +246,17 @@ public class JaxAdapter {
 			stateCheckTread.stopThread();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
+	/**
+	 * ./api/ へのアクセスを ./api/application.wadl（APIの仕様書） にリダイレクトする
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	@GET
+	@Path("/")
+	public Response redirect() throws URISyntaxException{
+		URI uri = new URI("application.wadl");
+		return Response.seeOther(uri).build();
+	}
 
 	//以下，アルパカ．参考用．
 	/**
@@ -339,16 +353,5 @@ public class JaxAdapter {
 		return Response.ok(pil).build();
 	}
 
-	/**
-	 * ./api/ へのアクセスを ./api/application.wadl（APIの仕様書） にリダイレクトする
-	 * @return
-	 * @throws URISyntaxException
-	 */
-	@GET
-	@Path("/")
-	public Response redirect() throws URISyntaxException{
-		URI uri = new URI("application.wadl");
-		return Response.seeOther(uri).build();
-	}
 
 }
