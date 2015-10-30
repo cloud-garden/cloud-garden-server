@@ -60,6 +60,27 @@ public class CloudController {
 		insertScheduleDB(active_schedule_collection, sc);
 	}
 
+	public List<Schedule> getScheduleList(String user,long date){
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.setTimeInMillis(date);
+
+		List<Schedule> list = new ArrayList<Schedule>();
+		DBObject query = new BasicDBObject();
+		query.put("user", user);
+		DBCursor cursor = past_schedule_collection.find(query);
+
+		for(DBObject o : cursor){
+			Schedule sc = new Schedule(o);
+			Calendar target = Calendar.getInstance();
+			target.setTimeInMillis(sc.getDate());
+			if(isSameDate(target, givenDate)){
+				list.add(sc);
+			}
+		}
+		Collections.sort(list);
+		return list;
+	}
+
 	public List<Schedule> getPastPreviousScheduleList(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);

@@ -23,6 +23,7 @@ import jp.cloudgarden.server.model.State;
 import jp.cloudgarden.server.threads.ScheduleCheckTread;
 import jp.cloudgarden.server.websocket.WebSocketServer;
 
+
 @Path("/")
 public class JaxAdapter {
 
@@ -130,6 +131,29 @@ public class JaxAdapter {
 	}
 
 	/**
+	 * 過去の処理履歴(指定日の)配列を返す．
+	 * @param userId  ユーザID
+	 * @param long    日付
+	 * @return 過去の処理履歴の配列．
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getScheduleList")
+	public Response getScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
+		List<Schedule> list = controller.getPastPreviousScheduleList(userId,date);
+		if(list.size() > 1){
+			Schedule[] ret = list.toArray(new Schedule[0]);;
+			return Response.status(200).entity(ret).build();
+		}else if(list.size() == 1){
+			String ret = "{\"schedule\":["+list.get(0).getJsonString()+"]}";
+			return Response.status(200).entity(ret).build();
+		}else{
+			String ret = "{\"schedule\":[]}";
+			return Response.status(200).entity(ret).build();
+		}
+	}
+
+	/**
 	 * 過去の処理履歴(指定日の前の日)の配列を返す．
 	 * @param userId  ユーザID
 	 * @param long    日付
@@ -229,6 +253,7 @@ public class JaxAdapter {
 			return Response.status(200).entity(OK_STATUS).build();
 		stateCheckTread = new ScheduleCheckTread(controller);
 		stateCheckTread.start();
+
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
@@ -246,6 +271,17 @@ public class JaxAdapter {
 			stateCheckTread.stopThread();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
+
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getws")
+	public Response getwsvalue() {
+		StringBuffer bf = new StringBuffer();
+		bf.append("connected = " + WebSocketServer.isConnected +",");
+		bf.append("message = " + WebSocketServer.latestMessage );
+		return Response.status(200).entity(bf.toString()).build();
+	}
+
 	/**
 	 * ./api/ へのアクセスを ./api/application.wadl（APIの仕様書） にリダイレクトする
 	 * @return
@@ -257,6 +293,8 @@ public class JaxAdapter {
 		URI uri = new URI("application.wadl");
 		return Response.seeOther(uri).build();
 	}
+
+
 
 	//以下，アルパカ．参考用．
 	/**

@@ -10,44 +10,47 @@ import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/api/ws")
 public class WebSocketServer {
-
-	private Session session;
-
+	private static Session session;
+	public static boolean isConnected = false;
+	public static String latestMessage = "none";
 	@OnOpen
 	public void onOpen(Session session) {
-		this.session = session;
+		System.out.println("WebSocket Open Success!");
+		isConnected = true;
+		WebSocketServer.session = session;
 	}
 
 	@OnClose
 	public void onClose(Session session) {
-		this.session = null;
+		isConnected = false;
+		WebSocketServer.session = null;
 	}
 
-	// テキストメッセージ受信時の処理
 	@OnMessage
-	public void onMessage(String msg) {
+	public static void onMessage(String msg) {
 		System.out.println("send:" + msg);
-		sendMessage("Sever gets your message! " + msg);
+		latestMessage = msg;
+		sendMessage(msg);
 	}
 
-	public void getTempAndHumid(){
+	public static void getTempAndHumid(){
 		String msg = "{ method: \"getTemperatureAndHumidty\"}";
 		sendMessage(msg);
 	}
 
-	public void executeWatering(){
+	public static void executeWatering(){
 		String msg = "{ method: \"executeWatering\"}";
 		sendMessage(msg);
 	}
 
-	public void getImage(){
+	public static void getImage(){
 		String msg = "{ method: \"getImage\"}";
 		sendMessage(msg);
 	}
 
-	private void sendMessage(String msg){
+	private static void sendMessage(String msg){
 		try {
-			this.session.getBasicRemote().sendText(msg);
+			session.getBasicRemote().sendText(msg);
 		} catch (IOException e) {
 		}
 	}
