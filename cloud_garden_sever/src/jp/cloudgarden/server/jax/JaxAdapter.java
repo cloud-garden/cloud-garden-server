@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -16,6 +17,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.sun.jersey.server.impl.model.RulesMap.ConflictClosure;
 
 import jp.cloudgarden.server.model.PhotoIdList;
 import jp.cloudgarden.server.model.Schedule;
@@ -219,13 +222,23 @@ public class JaxAdapter {
 
 	//for hardware.
 	@POST
+//	@Consumes({MediaType.APPLICATION_JSON})
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/updateState")
 	public Response updateState(SensorValue sensor) {
 		controller.updateState(sensor);
-		System.out.println("TEMP :"+sensor.temperature);
-		System.out.println("HUMD :"+sensor.humidity);
-		return Response.status(200).entity(OK_STATUS).build();
+		System.out.println("TEMP :"+sensor.getTemperature());
+		System.out.println("HUMD :"+sensor.getHumidity());
+		System.out.println("IMAGE :"+sensor.image);
+
+		String ret;
+		if(CloudController.needWatering){
+			ret = "{\"status\" : \"success\" , \"watering\" :\"true\" }";
+			CloudController.needWatering = false;
+		}else{
+			ret = "{\"status\" : \"success\" , \"watering\" :\"false\" }";
+		}
+		return Response.status(200).entity(ret).build();
 	}
 
 	/**

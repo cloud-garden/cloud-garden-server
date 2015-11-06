@@ -4,12 +4,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 //for hardware.
-@XmlRootElement(name="sensors")
+@XmlRootElement
 public class SensorValue {
 	@XmlElement(name="temperature")
-	public int temperature;
+	public String temperature;
 	@XmlElement(name="humidity")
-	public int humidity;
-	@XmlElement(name="photo")
+	public String humidity;
+	@XmlElement(name="image")
 	public String image;
+
+	public int getTemperature() {
+		return Integer.parseInt(temperature.substring(0,2));
+	}
+
+	public int getHumidity() {
+		return Integer.parseInt(humidity.substring(0,2));
+	}
+
+	public String getImage() {
+		return image;
+	}
 }

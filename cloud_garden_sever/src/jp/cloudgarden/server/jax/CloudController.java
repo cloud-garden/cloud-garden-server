@@ -48,8 +48,9 @@ public class CloudController {
 	private DBCollection active_schedule_collection;
 	private DBCollection photo_collection;
 
-	private State latestCurrentState = new State();
-	private String latestPhotoData = new String();
+	private static State latestCurrentState = new State();
+	private static String latestPhotoData = new String();
+	public static boolean needWatering = false;
 
 	private final String HARD_URL = "";
 
@@ -241,7 +242,7 @@ public class CloudController {
 				if(scheduledTime.get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY)
 						&& scheduledTime.get(Calendar.MINUTE) == currentTime.get(Calendar.MINUTE) ){
 					System.err.println("routine watering");
-					//						executeWatering();
+					needWatering = true;
 					Schedule sc = new Schedule(o);
 					sc.setDate(currentTime.getTime().getTime());
 					insertScheduleDB(past_schedule_collection, sc);
@@ -253,15 +254,12 @@ public class CloudController {
 				}
 				System.err.println("not routine watering");
 				//If d is a past time, execute watering.
-				//					executeWatering();
+				needWatering = true;
 				Schedule sc = new Schedule(o);
 				deleteActiveSchedule(sc.getId());
 				sc.setDate(currentTime.getTime().getTime());
 				insertScheduleDB(past_schedule_collection, sc);
 			}
-			//			} catch (WateringErrorException e) {
-			//				e.printStackTrace();
-			//			}
 		}
 	}
 
@@ -272,11 +270,9 @@ public class CloudController {
 
 	//for hardware.
 	public void updateState(SensorValue sensor){
-		int humid = sensor.humidity;
-		int temp = sensor.temperature;
-		latestCurrentState.setHumid(humid);
-		latestCurrentState.setTemperature(temp);
-		latestPhotoData = sensor.image;
+		latestCurrentState.setHumid(sensor.getHumidity());
+		latestCurrentState.setTemperature(sensor.getTemperature());
+		latestPhotoData = new String(sensor.image);
 	}
 
 	public void updateAllCurrentStates(){
@@ -294,24 +290,6 @@ public class CloudController {
 		current.setPhotoId(photoId);
 		insertStateDB(current);
 		return current;
-	}
-
-	private void executeWatering() throws WateringErrorException{
-		Client client = Client.create();
-		WebResource webResource = client.resource(HARD_URL).path("");
-		//受け取る型を指定できるらしい．対応するBeanを作成するのもアリ．
-		String json = webResource.accept(MediaType.APPLICATION_XML).get(String.class);
-		//具体的な返り値の実装がまだ分からないので，空けておく．
-		//エラーが起こったら例外を投げる
-		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			Document document = documentBuilder.parse(json);
-			Element root = document.getDocumentElement();
-			//	root.getAttribute("status").equals("OK");
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void insertStateDB(State s){
@@ -340,7 +318,7 @@ public class CloudController {
 			return null;
 		}
 		String src = (String)o.get("data");
-		src = src.split(",")[1];
+//		src = src.split(",")[1];
 		byte[] bytes = Base64.decode(src);
 		try {
 			BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(bytes));
@@ -351,10 +329,6 @@ public class CloudController {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	private class WateringErrorException extends Exception {
-		private static final long serialVersionUID = 1234L;
 	}
 
 	//以下，アルパカ．参考用．
