@@ -333,6 +333,7 @@ public class CloudController {
 	}
 
 	public ByteArrayOutputStream getPhoto(String id) {
+		if(!ObjectId.isValid(id)) return null;
 		DBObject query = new BasicDBObject("_id", new ObjectId(id));
 		DBObject o = photo_collection.findOne(query);
 		if (o == null) {
