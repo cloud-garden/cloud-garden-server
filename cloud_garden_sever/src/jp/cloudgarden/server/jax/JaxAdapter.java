@@ -22,7 +22,6 @@ import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
 import jp.cloudgarden.server.threads.ScheduleCheckTread;
-import jp.cloudgarden.server.websocket.WebSocketServer;
 
 
 @Path("/")
@@ -224,6 +223,8 @@ public class JaxAdapter {
 	@Path("/updateState")
 	public Response updateState(SensorValue sensor) {
 		controller.updateState(sensor);
+		System.out.println("TEMP :"+sensor.temperature);
+		System.out.println("HUMD :"+sensor.humidity);
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
