@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import jp.cloudgarden.server.model.PhotoIdList;
 import jp.cloudgarden.server.model.Schedule;
+import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
 import jp.cloudgarden.server.threads.ScheduleCheckTread;
 import jp.cloudgarden.server.websocket.WebSocketServer;
@@ -140,7 +141,7 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getScheduleList")
 	public Response getScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
-		List<Schedule> list = controller.getPastPreviousScheduleList(userId,date);
+		List<Schedule> list = controller.getScheduleList(userId,date);
 		if(list.size() > 1){
 			Schedule[] ret = list.toArray(new Schedule[0]);;
 			return Response.status(200).entity(ret).build();
@@ -220,6 +221,15 @@ public class JaxAdapter {
 		}
 	}
 
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/addState")
+	public Response addState(@QueryParam("user") String userId,@QueryParam("date") long date){
+		controller.addState(userId, date);
+		return Response.status(200).entity(OK_STATUS).build();
+	}
+
+
 	/**
 	 * @param id 画像のID
 	 * @return 画像ファイル
@@ -280,6 +290,14 @@ public class JaxAdapter {
 		bf.append("connected = " + WebSocketServer.isConnected +",");
 		bf.append("message = " + WebSocketServer.latestMessage );
 		return Response.status(200).entity(bf.toString()).build();
+	}
+
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/updateState")
+	public Response updateState(SensorValue sensor) {
+		controller.updateState(sensor);
+		return Response.status(200).entity(OK_STATUS).build();
 	}
 
 	/**

@@ -20,6 +20,7 @@ import jp.cloudgarden.server.model.Comment;
 import jp.cloudgarden.server.model.Like;
 import jp.cloudgarden.server.model.Report;
 import jp.cloudgarden.server.model.Schedule;
+import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
 import jp.cloudgarden.server.util.DBUtils;
 
@@ -138,6 +139,16 @@ public class CloudController {
 		return list;
 	}
 
+	public void addState(String user,long date){
+		State state = new State();
+		state.setDate(date);
+		state.setUser(user);
+		state.setHumid(22);
+		state.setTemperature(32);
+		state.setPhotoId("hogehoge");
+		insertStateDB(state);
+	}
+
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);
@@ -246,7 +257,21 @@ public class CloudController {
 	}
 
 	public State getCurrentState(String user){
+		//ここはただcurrentStateを返すだけにする．
 		return updateCurrentState(user)	;
+	}
+
+	private State currentState = new State();
+	private String photoData = new String();
+	public void updateState(SensorValue sensor){
+		int humid = sensor.humidity;
+		int temp = sensor.temperature;
+		currentState.setHumid(humid);
+		currentState.setTemperature(temp);
+		photoData = sensor.image;
+
+		System.out.println("humidity = " + humid);
+		System.out.println("temp     = " + temp);
 	}
 
 	public void updateAllCurrentStates(){
