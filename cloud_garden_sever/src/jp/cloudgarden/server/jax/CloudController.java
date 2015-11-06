@@ -169,6 +169,12 @@ public class CloudController {
 	}
 
 
+	/**
+	 * @param user
+	 * @param date
+	 * @return State of the day which is the same as param .<br>
+	 *         null if the corresponding state is not found.
+	 */
 	public State getPastNextState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);

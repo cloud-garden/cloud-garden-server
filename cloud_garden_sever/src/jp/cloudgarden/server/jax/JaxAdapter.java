@@ -33,6 +33,7 @@ public class JaxAdapter {
 	private static ScheduleCheckTread stateCheckTread;;
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
+	private static int MILLSEC_OF_DAY = 8400000;
 
 	/**
 	 * 水やりスケジュールを作成し，DBに登録する
@@ -95,7 +96,7 @@ public class JaxAdapter {
 	 * @param userId ユーザID
 	 * @return 作物状態のJSON
 	 */
-	@GET//最終的にはPOSTへ．
+	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getCurrentState")
 	public Response getCurrentState(@QueryParam("user") String user){
@@ -107,22 +108,25 @@ public class JaxAdapter {
 	 * 指定日の前の日の作物状態を返す
 	 * @param userId ユーザID
 	 * @param long    日付
-	 * @return 指定日の前の日の作物状態の配列.ない場合はnull
+	 * @return 指定日から先日へさかのぼっていき，もっとも近いときの作物状態を返す．
+	 * 一週間さかのぼってもない場合は，dateに-1が入ったJSONを返す．
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastPreviousState(userId,date);
-		int i=0;
-
-		for(i=0;i<7&&past==null;i++){
-			//1日は8400000ミリ秒
-			date = date - 8400000;
+		for(int i=0; i<7 ;i++){
+			date = date - MILLSEC_OF_DAY;
 			past = controller.getPastNextState(userId,date);
+			if(past != null) break;
 		}
-
-		return Response.status(200).entity(past).build();
+		if(past != null){
+			return Response.status(200).entity(past).build();
+		}else{
+			State nullState = new State("no", -1, 0, 0, "");
+			return Response.status(200).entity(nullState).build();
+		}
 	}
 
 	/**
@@ -136,16 +140,17 @@ public class JaxAdapter {
 	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastNextState(userId,date);
-
-		int i=0;
-
-		for(i=0;i<7&&past==null;i++){
-			//1日は8400000ミリ秒
-			date = date + 8400000;
+		for(int i=0; i<7 ;i++){
+			date = date + MILLSEC_OF_DAY;
 			past = controller.getPastNextState(userId,date);
+			if(past != null) break;
 		}
-
-		return Response.status(200).entity(past).build();
+		if(past != null){
+			return Response.status(200).entity(past).build();
+		}else{
+			State nullState = new State("no", -1, 0, 0, "");
+			return Response.status(200).entity(nullState).build();
+		}
 	}
 
 	/**
@@ -171,12 +176,14 @@ public class JaxAdapter {
 		}
 	}
 
+
 	/**
 	 * 過去の処理履歴(指定日の前の日)の配列を返す．
 	 * @param userId  ユーザID
 	 * @param long    日付
 	 * @return 過去の処理履歴の配列．
 	 */
+	/*
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousScheduleList")
@@ -194,12 +201,14 @@ public class JaxAdapter {
 			return Response.status(200).entity(ret).build();
 		}
 	}
+	*/
 	/**
 	 * 過去の処理履歴（指定日の後の日）の配列を返す．
 	 * @param userId  ユーザID
 	 * @param long    日付
 	 * @return 過去の処理履歴の配列．
 	 */
+	/*
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastNextScheduleList")
@@ -216,6 +225,7 @@ public class JaxAdapter {
 			return Response.status(200).entity(ret).build();
 		}
 	}
+	*/
 
 	/**
 	 * 過去の処理履歴の配列を返す．
