@@ -261,6 +261,7 @@ public class CloudController {
 		return updateCurrentState(user)	;
 	}
 
+	//for hardware.
 	private State currentState = new State();
 	private String photoData = new String();
 	public void updateState(SensorValue sensor){

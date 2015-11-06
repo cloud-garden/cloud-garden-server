@@ -310,6 +310,7 @@ public class JaxAdapter {
 		return Response.status(200).entity(bf.toString()).build();
 	}
 
+	//for hardware.
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/updateState")
