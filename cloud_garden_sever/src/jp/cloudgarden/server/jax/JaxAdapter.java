@@ -176,57 +176,6 @@ public class JaxAdapter {
 		}
 	}
 
-
-	/**
-	 * 過去の処理履歴(指定日の前の日)の配列を返す．
-	 * @param userId  ユーザID
-	 * @param long    日付
-	 * @return 過去の処理履歴の配列．
-	 */
-	/*
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastPreviousScheduleList")
-	public Response getPastPreviousScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
-		List<Schedule> list = controller.getPastPreviousScheduleList(userId,date);
-
-		if(list.size() > 1){
-			Schedule[] ret = list.toArray(new Schedule[0]);;
-			return Response.status(200).entity(ret).build();
-		}else if(list.size() == 1){
-			String ret = "{\"schedule\":["+list.get(0).getJsonString()+"]}";
-			return Response.status(200).entity(ret).build();
-		}else{
-			String ret = "{\"schedule\":[]}";
-			return Response.status(200).entity(ret).build();
-		}
-	}
-	*/
-	/**
-	 * 過去の処理履歴（指定日の後の日）の配列を返す．
-	 * @param userId  ユーザID
-	 * @param long    日付
-	 * @return 過去の処理履歴の配列．
-	 */
-	/*
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getPastNextScheduleList")
-	public Response getPastNextScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
-		List<Schedule> list = controller.getPastNextScheduleList(userId,date);
-		if(list.size() > 1){
-			Schedule[] ret = list.toArray(new Schedule[0]);;
-			return Response.status(200).entity(ret).build();
-		}else if(list.size() == 1){
-			String ret = "{\"schedule\":["+list.get(0).getJsonString()+"]}";
-			return Response.status(200).entity(ret).build();
-		}else{
-			String ret = "{\"schedule\":[]}";
-			return Response.status(200).entity(ret).build();
-		}
-	}
-	*/
-
 	/**
 	 * 過去の処理履歴の配列を返す．
 	 * @param userId  ユーザID

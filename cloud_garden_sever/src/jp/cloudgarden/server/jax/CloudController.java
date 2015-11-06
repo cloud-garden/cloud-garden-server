@@ -48,6 +48,9 @@ public class CloudController {
 	private DBCollection active_schedule_collection;
 	private DBCollection photo_collection;
 
+	private State latestCurrentState = new State();
+	private String latestPhotoData = new String();
+
 	private final String HARD_URL = "";
 
 	public CloudController() {
@@ -268,17 +271,12 @@ public class CloudController {
 	}
 
 	//for hardware.
-	private State currentState = new State();
-	private String photoData = new String();
 	public void updateState(SensorValue sensor){
 		int humid = sensor.humidity;
 		int temp = sensor.temperature;
-		currentState.setHumid(humid);
-		currentState.setTemperature(temp);
-		photoData = sensor.image;
-
-		System.out.println("humidity = " + humid);
-		System.out.println("temp     = " + temp);
+		latestCurrentState.setHumid(humid);
+		latestCurrentState.setTemperature(temp);
+		latestPhotoData = sensor.image;
 	}
 
 	public void updateAllCurrentStates(){
@@ -287,20 +285,15 @@ public class CloudController {
 	}
 
 	private State updateCurrentState(String user){
-		try {
-			State current = getStateFromHardwareServer(user);
-			String photo = getPhotoFromHardwareServer(user);
-			DBObject o = new BasicDBObject();
-			o.put("data", photo);
-			photo_collection.save(o);
-			String photoId = o.get("_id").toString();
-			current.setPhotoId(photoId);
-			insertStateDB(current);
-			return current;
-		} catch (MonitorErrorException e) {
-			e.printStackTrace();
-			return new State();
-		}
+		State current = latestCurrentState;
+		String photo = latestPhotoData;
+		DBObject o = new BasicDBObject();
+		o.put("data", photo);
+		photo_collection.save(o);
+		String photoId = o.get("_id").toString();
+		current.setPhotoId(photoId);
+		insertStateDB(current);
+		return current;
 	}
 
 	private void executeWatering() throws WateringErrorException{
