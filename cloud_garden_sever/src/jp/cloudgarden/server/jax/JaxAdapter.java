@@ -114,6 +114,14 @@ public class JaxAdapter {
 	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastPreviousState(userId,date);
+		int i=0;
+
+		for(i=0;i<7&&past==null;i++){
+			//1日は8400000ミリ秒
+			date = date - 8400000;
+			past = controller.getPastNextState(userId,date);
+		}
+
 		return Response.status(200).entity(past).build();
 	}
 
@@ -128,6 +136,15 @@ public class JaxAdapter {
 	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = controller.getPastNextState(userId,date);
+
+		int i=0;
+
+		for(i=0;i<7&&past==null;i++){
+			//1日は8400000ミリ秒
+			date = date + 8400000;
+			past = controller.getPastNextState(userId,date);
+		}
+
 		return Response.status(200).entity(past).build();
 	}
 
@@ -165,6 +182,7 @@ public class JaxAdapter {
 	@Path("/getPastPreviousScheduleList")
 	public Response getPastPreviousScheduleList(@QueryParam("user") String userId,@QueryParam("date") long date){
 		List<Schedule> list = controller.getPastPreviousScheduleList(userId,date);
+
 		if(list.size() > 1){
 			Schedule[] ret = list.toArray(new Schedule[0]);;
 			return Response.status(200).entity(ret).build();
