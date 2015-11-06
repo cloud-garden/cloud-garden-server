@@ -206,18 +206,39 @@ public class JaxAdapter {
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
+	/*
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/getws")
+	public Response getwsvalue() {
+		StringBuffer bf = new StringBuffer();
+		bf.append("connected = " + WebSocketServer.isConnected +",");
+		bf.append("message = " + WebSocketServer.latestMessage );
+		return Response.status(200).entity(bf.toString()).build();
+	}
+	*/
+
+	//for hardware.
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/updateState")
+	public Response updateState(SensorValue sensor) {
+		controller.updateState(sensor);
+		return Response.status(200).entity(OK_STATUS).build();
+	}
 
 	/**
-	 * @param id 画像のID
-	 * @return 画像ファイル
+	 * 撮影した画像ファイルを返す
+	 * @param 写真のid
+	 * @return png画像
 	 */
 	@GET
 	@Produces("image/png")
-	@Path("/getPhoto")
+	@Path("/photo/{id}.png")
 	public Response getPhoto(@PathParam("id") String id) {
 		ByteArrayOutputStream baos = controller.getPhoto(id);
 		if (baos == null) {
-			return Response.status(403).entity(ERR_STATUS).build();
+			return Response.status(403).entity("<error>photo not found</error>").build();
 		}
 		byte[] photoData = baos.toByteArray();
 		return Response.ok(new ByteArrayInputStream(photoData)).build();
@@ -230,7 +251,7 @@ public class JaxAdapter {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/start")
-	public Response startCheck(){
+	public Response startChecking(){
 		if(scheduleCheckTread != null && scheduleCheckTread.isRunning())
 			return Response.status(200).entity(OK_STATUS).build();
 		scheduleCheckTread = new ScheduleCheckTread(controller);
@@ -251,30 +272,11 @@ public class JaxAdapter {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/stop")
-	public Response stopCheck(){
+	public Response stopChecking(){
 		if(scheduleCheckTread != null)
 			scheduleCheckTread.stopThread();
 		if(stateCheckTread != null)
 			stateCheckTread.stopThread();
-		return Response.status(200).entity(OK_STATUS).build();
-	}
-
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/getws")
-	public Response getwsvalue() {
-		StringBuffer bf = new StringBuffer();
-		bf.append("connected = " + WebSocketServer.isConnected +",");
-		bf.append("message = " + WebSocketServer.latestMessage );
-		return Response.status(200).entity(bf.toString()).build();
-	}
-
-	//for hardware.
-	@POST
-	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/updateState")
-	public Response updateState(SensorValue sensor) {
-		controller.updateState(sensor);
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
@@ -292,7 +294,7 @@ public class JaxAdapter {
 
 
 
-	//以下，アルパカ．参考用．
+	//以下，アルパカ．参考用．------------------------------------------------------------------------------------------
 	/**
 	 * いいねを投稿する
 	 * @return okだけ

@@ -332,26 +332,6 @@ public class CloudController {
 		col.save(o);
 	}
 
-
-	private State getStateFromHardwareServer(String user) throws MonitorErrorException{
-		State ret = new State();
-		Calendar current = Calendar.getInstance();
-		ret.setDate(current.getTimeInMillis());
-		ret.setUser(user);
-		//get from HWS
-		//set the other values other than "photo"
-		int humid = 78;
-		int temp = 23;
-		ret.setHumid(humid);
-		ret.setTemperature(temp);
-		return ret;
-	}
-
-	private String getPhotoFromHardwareServer(String user) throws MonitorErrorException{
-
-		return "photo data";
-	}
-
 	public ByteArrayOutputStream getPhoto(String id) {
 		DBObject query = new BasicDBObject("_id", new ObjectId(id));
 		DBObject o = photo_collection.findOne(query);
@@ -373,10 +353,6 @@ public class CloudController {
 	}
 
 	private class WateringErrorException extends Exception {
-		private static final long serialVersionUID = 1234L;
-	}
-
-	private class MonitorErrorException extends Exception {
 		private static final long serialVersionUID = 1234L;
 	}
 
