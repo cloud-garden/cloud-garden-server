@@ -227,9 +227,9 @@ public class JaxAdapter {
 	@Path("/updateState")
 	public Response updateState(SensorValue sensor) {
 		controller.updateState(sensor);
-		System.out.println("TEMP :"+sensor.getTemperature());
-		System.out.println("HUMD :"+sensor.getHumidity());
-		System.out.println("IMAGE :"+sensor.image);
+//		System.out.println("TEMP :"+sensor.getTemperature());
+//		System.out.println("HUMD :"+sensor.getHumidity());
+//		System.out.println("IMAGE :"+sensor.image);
 
 		String ret;
 		if(CloudController.needWatering){
@@ -291,6 +291,17 @@ public class JaxAdapter {
 			scheduleCheckTread.stopThread();
 		if(stateCheckTread != null)
 			stateCheckTread.stopThread();
+		return Response.status(200).entity(OK_STATUS).build();
+	}
+	/**
+	 * stop schedule check.
+	 * @return OK
+	 */
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	@Path("/d")
+	public Response createDummy(){
+		controller.dum();
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 

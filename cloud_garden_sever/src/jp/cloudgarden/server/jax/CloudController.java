@@ -156,7 +156,7 @@ public class CloudController {
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);
-		System.out.println("check" + new Date(date).toString());
+		System.out.println("check " + new Date(date).toString());
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
 		DBCursor cursor = state_collection.find(query);
@@ -273,7 +273,7 @@ public class CloudController {
 
 	public void updateAllCurrentStates(){
 		//ほんとはすべてのユーザIDに対して行う．今回は固定なのでuser1にしている．
-		updateCurrentState("user1");
+		updateCurrentState("keita");
 	}
 
 	private State updateCurrentState(String user){
@@ -284,6 +284,8 @@ public class CloudController {
 		photo_collection.save(o);
 		String photoId = o.get("_id").toString();
 		current.setPhotoId(photoId);
+		current.setDate(Calendar.getInstance().getTimeInMillis());
+		current.setUser(user);
 		insertStateDB(current);
 		return current;
 	}
@@ -304,6 +306,21 @@ public class CloudController {
 		o.put("date", sc.getDate());
 		o.put("isRoutine", sc.isRoutine());
 		col.save(o);
+	}
+
+	public void dum(){
+		State state = getCurrentState("keita");
+		Calendar cal = Calendar.getInstance();
+		long time = cal.getTimeInMillis();
+
+		for(int i = 0 ; i < 100 ; i++){
+			time = time - 86400000;
+			state.setHumid(100 - i*2);
+			state.setTemperature(i+5);
+			state.setDate(time);
+			System.out.println(new Date(time).toString() +",humid = "+ (100-i*2) +",temp= "+(i+5)+ " added.");
+			insertStateDB(state);
+		}
 	}
 
 	public ByteArrayOutputStream getPhoto(String id) {
