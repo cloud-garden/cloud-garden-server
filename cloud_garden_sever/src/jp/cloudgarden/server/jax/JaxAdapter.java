@@ -35,7 +35,7 @@ public class JaxAdapter {
 	private static ScheduleCheckTread stateCheckTread;;
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
-	private static int MILLSEC_OF_DAY = 8400000;
+	private static int MILLSEC_OF_DAY = 86400000;
 
 	/**
 	 * 水やりスケジュールを作成し，DBに登録する
@@ -117,16 +117,16 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
-		State past = controller.getPastPreviousState(userId,date);
+		State past = null;
 		for(int i=0; i<7 ;i++){
 			date = date - MILLSEC_OF_DAY;
-			past = controller.getPastNextState(userId,date);
+			past = controller.getPastPreviousState(userId,date);
 			if(past != null) break;
 		}
 		if(past != null){
 			return Response.status(200).entity(past).build();
 		}else{
-			State nullState = new State("no", -1, 0, 0, "");
+			State nullState = new State("", -1, 0, 0, "");
 			return Response.status(200).entity(nullState).build();
 		}
 	}
@@ -141,7 +141,7 @@ public class JaxAdapter {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
-		State past = controller.getPastNextState(userId,date);
+		State past = null;
 		for(int i=0; i<7 ;i++){
 			date = date + MILLSEC_OF_DAY;
 			past = controller.getPastNextState(userId,date);

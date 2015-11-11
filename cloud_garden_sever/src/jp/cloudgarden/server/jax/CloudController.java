@@ -156,7 +156,7 @@ public class CloudController {
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);
-
+		System.out.println("check" + new Date(date).toString());
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
 		DBCursor cursor = state_collection.find(query);
