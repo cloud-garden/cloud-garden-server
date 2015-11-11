@@ -235,13 +235,10 @@ public class CloudController {
 			boolean isRoutine = (boolean) o.get("isRoutine");
 			Calendar scheduledTime = Calendar.getInstance();
 			scheduledTime.setTimeInMillis(date);
-			System.err.println("isRoutine = "+ isRoutine );
-			System.err.println("Tscheduled "+scheduledTime.getTime());
-			System.err.println("Tcurrent   "+currentTime.getTime());
 			if(isRoutine){
 				if(scheduledTime.get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY)
 						&& scheduledTime.get(Calendar.MINUTE) == currentTime.get(Calendar.MINUTE) ){
-					System.err.println("routine watering");
+					System.err.println(Calendar.getInstance().toString() +" routine watering ");
 					needWatering = true;
 					Schedule sc = new Schedule(o);
 					sc.setDate(currentTime.getTime().getTime());
@@ -249,10 +246,9 @@ public class CloudController {
 				}
 			}else{
 				if(scheduledTime.compareTo(currentTime) > 0){
-					System.err.println("\tFuture");
 					continue;
 				}
-				System.err.println("not routine watering");
+				System.err.println(Calendar.getInstance().toString() +" not-routine watering ");
 				//If d is a past time, execute watering.
 				needWatering = true;
 				Schedule sc = new Schedule(o);

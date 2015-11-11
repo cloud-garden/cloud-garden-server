@@ -118,10 +118,10 @@ public class JaxAdapter {
 	@Path("/getPastPreviousState")
 	public Response getPastPreviousState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = null;
-		for(int i=0; i<7 ;i++){
-			date = date - MILLSEC_OF_DAY;
+		for(int i=0; i<15 ;i++){
 			past = controller.getPastPreviousState(userId,date);
 			if(past != null) break;
+			date = date - MILLSEC_OF_DAY;
 		}
 		if(past != null){
 			return Response.status(200).entity(past).build();
@@ -142,10 +142,10 @@ public class JaxAdapter {
 	@Path("/getPastNextState")
 	public Response getPastNextState(@QueryParam("user") String userId,@QueryParam("date") long date){
 		State past = null;
-		for(int i=0; i<7 ;i++){
-			date = date + MILLSEC_OF_DAY;
+		for(int i=0; i<15 ;i++){
 			past = controller.getPastNextState(userId,date);
 			if(past != null) break;
+			date = date + MILLSEC_OF_DAY;
 		}
 		if(past != null){
 			return Response.status(200).entity(past).build();
