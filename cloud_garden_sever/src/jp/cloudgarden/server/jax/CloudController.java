@@ -137,16 +137,6 @@ public class CloudController {
 		return list;
 	}
 
-	public void addState(String user,long date){
-		State state = new State();
-		state.setDate(date);
-		state.setUser(user);
-		state.setHumid(22);
-		state.setTemperature(32);
-		state.setPhotoId("hogehoge");
-		insertStateDB(state);
-	}
-
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);
@@ -285,6 +275,7 @@ public class CloudController {
 	}
 
 	private void insertStateDB(State s){
+		System.err.println(Calendar.getInstance().getTime().toString() +" insert state to StateDB.");
 		DBObject o = new BasicDBObject();
 		o.put("user", s.getUser());
 		o.put("date", s.getDate());

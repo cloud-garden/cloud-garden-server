@@ -192,14 +192,6 @@ public class JaxAdapter {
 		}
 	}
 
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	@Path("/addState")
-	public Response addState(@QueryParam("user") String userId,@QueryParam("date") long date){
-		controller.addState(userId, date);
-		return Response.status(200).entity(OK_STATUS).build();
-	}
-
 	//for hardware.
 	@POST
 	@Produces({MediaType.APPLICATION_JSON})
