@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -18,21 +17,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.sun.jersey.server.impl.model.RulesMap.ConflictClosure;
-
 import jp.cloudgarden.server.model.PhotoIdList;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
-import jp.cloudgarden.server.threads.ScheduleCheckTread;
 
 
 @Path("/")
 public class JaxAdapter {
 
 	private final CloudController controller = new CloudController();
-	private static ScheduleCheckTread scheduleCheckTread;
-	private static ScheduleCheckTread stateCheckTread;;
+
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
 	private static int MILLSEC_OF_DAY = 86400000;
@@ -262,20 +257,26 @@ public class JaxAdapter {
 	 * start schedule check.
 	 * @return OK
 	 */
+	/*
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/start")
 	public Response startChecking(){
-		if(scheduleCheckTread != null && scheduleCheckTread.isRunning())
+		if(scheduleCheckTread == null){
+			scheduleCheckTread = new ScheduleCheckTread(controller);
+			scheduleCheckTread.start();
 			return Response.status(200).entity(OK_STATUS).build();
-		scheduleCheckTread = new ScheduleCheckTread(controller);
-		scheduleCheckTread.start();
+		}else if(!scheduleCheckTread.isRunning()){
+			scheduleCheckTread.start();
+		}
 
-		if(stateCheckTread != null && stateCheckTread.isRunning())
+		if(stateCheckTread == null){
+			stateCheckTread  = new ScheduleCheckTread(controller);
+			stateCheckTread.start();
 			return Response.status(200).entity(OK_STATUS).build();
-		stateCheckTread = new ScheduleCheckTread(controller);
-		stateCheckTread.start();
-
+		}else if(!scheduleCheckTread.isRunning()){
+			stateCheckTread.start();
+		}
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
@@ -283,6 +284,7 @@ public class JaxAdapter {
 	 * stop schedule check.
 	 * @return OK
 	 */
+	/*
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Path("/stop")
@@ -292,7 +294,7 @@ public class JaxAdapter {
 		if(stateCheckTread != null)
 			stateCheckTread.stopThread();
 		return Response.status(200).entity(OK_STATUS).build();
-	}
+	}*/
 	/**
 	 * stop schedule check.
 	 * @return OK

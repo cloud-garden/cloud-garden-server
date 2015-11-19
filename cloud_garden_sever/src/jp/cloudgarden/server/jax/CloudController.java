@@ -11,10 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import jp.cloudgarden.server.model.Comment;
 import jp.cloudgarden.server.model.Like;
@@ -22,19 +18,15 @@ import jp.cloudgarden.server.model.Report;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
+import jp.cloudgarden.server.threads.ScheduleCheckTread;
 import jp.cloudgarden.server.util.DBUtils;
 
 import org.bson.types.ObjectId;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.Base64;
 
 public class CloudController {
@@ -52,13 +44,18 @@ public class CloudController {
 	private static String latestPhotoData = new String();
 	public static boolean needWatering = false;
 
-	private final String HARD_URL = "";
+	private ScheduleCheckTread scheduleCheckTread;
+	private ScheduleCheckTread stateCheckTread;;
 
 	public CloudController() {
 		this.state_collection = DBUtils.getInstance().getDb().getCollection(stateCollectionName);
 		this.past_schedule_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 		this.photo_collection = DBUtils.getInstance().getDb().getCollection(photoCollectionName);
+		this.scheduleCheckTread = new ScheduleCheckTread(this);
+		this.scheduleCheckTread.start();
+		this.stateCheckTread  = new ScheduleCheckTread(this);
+		this.stateCheckTread.start();
 	}
 
 	public void createActiveSchedule(Schedule sc){
@@ -238,7 +235,7 @@ public class CloudController {
 			if(isRoutine){
 				if(scheduledTime.get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY)
 						&& scheduledTime.get(Calendar.MINUTE) == currentTime.get(Calendar.MINUTE) ){
-					System.err.println(Calendar.getInstance().toString() +" routine watering ");
+					System.err.println(Calendar.getInstance().getTime().toString() +" routine watering ");
 					needWatering = true;
 					Schedule sc = new Schedule(o);
 					sc.setDate(currentTime.getTime().getTime());
@@ -248,7 +245,7 @@ public class CloudController {
 				if(scheduledTime.compareTo(currentTime) > 0){
 					continue;
 				}
-				System.err.println(Calendar.getInstance().toString() +" not-routine watering ");
+				System.err.println(Calendar.getInstance().getTime().toString() +" not-routine watering ");
 				//If d is a past time, execute watering.
 				needWatering = true;
 				Schedule sc = new Schedule(o);
