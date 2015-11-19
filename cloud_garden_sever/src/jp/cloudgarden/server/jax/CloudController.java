@@ -12,9 +12,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import jp.cloudgarden.server.model.Comment;
-import jp.cloudgarden.server.model.Like;
-import jp.cloudgarden.server.model.Report;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
@@ -42,7 +39,7 @@ public class CloudController {
 
 	private static State latestCurrentState = new State();
 	private static String latestPhotoData = new String();
-	public static boolean needWatering = false;
+	public boolean needWatering = false;
 
 	private ScheduleCheckTread scheduleCheckTread;
 	private ScheduleCheckTread stateCheckTread;;
@@ -328,7 +325,6 @@ public class CloudController {
 			return null;
 		}
 		String src = (String)o.get("data");
-//		src = src.split(",")[1];
 		byte[] bytes = Base64.decode(src);
 		try {
 			BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(bytes));
@@ -339,65 +335,6 @@ public class CloudController {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	//以下，アルパカ．参考用．
-	public void like() {
-		DBObject like = new BasicDBObject();
-		like.put("date", new Date());
-		state_collection.save(like);
-	}
-
-	public void comment(String message) {
-		DBObject comment = new BasicDBObject();
-		comment.put("date", new Date());
-		comment.put("message", message);
-		past_schedule_collection.save(comment);
-	}
-
-	public Report getReport(int n) {
-		DBObject query = new BasicDBObject();
-
-		Report report = new Report();
-		List<Like> likes = new ArrayList<Like>();
-		List<Comment> comments = new ArrayList<Comment>();
-
-		DBCursor cursor = state_collection.find(query);
-		/*
-		for (DBObject like : cursor) {
-			likes.add(new Like((Date)like.get("date")));
-		}
-		 */
-		report.setTotalLike(cursor.count());
-		DBObject sort = new BasicDBObject("_id", -1);
-		cursor = past_schedule_collection.find(query).sort(sort).limit(n);
-		for (DBObject comment : cursor) {
-			comments.add(new Comment(
-					(Date)comment.get("date"), (String)comment.get("message")));
-		}
-
-		report.setLikes(likes);
-		report.setComments(comments);
-		return report;
-	}
-
-
-	public String savePhoto(String photoData) {
-		DBObject dbo = new BasicDBObject("src", photoData);
-		active_schedule_collection.save(dbo);
-		String id = dbo.get("_id").toString();
-		return id;
-	}
-
-
-	public List<String> getPhotoList(int n) {
-		List<String> list = new ArrayList<>();
-		DBObject orderBy = new BasicDBObject("$natural", -1);
-		DBCursor cursor = active_schedule_collection.find().sort(orderBy).limit(n);
-		for (DBObject o : cursor) {
-			list.add(o.get("_id").toString());
-		}
-		return list;
 	}
 
 }

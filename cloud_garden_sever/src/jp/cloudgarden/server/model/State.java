@@ -12,7 +12,7 @@ public class State {
 	private long date;
 	private int temperature;
 	private int humid;
-	private String photoId;//ここでは写真のIDだけ保持してればいいかもしれない．
+	private String photoId;
 
 	public State(String user, long date, int temperature, int humid, String photoId) {
 		this.user = user;
@@ -21,7 +21,7 @@ public class State {
 		this.humid = humid;
 		this.photoId = photoId;
 	}
-	//データベース操作のため追加
+	//データベース操作のため
 	public State(DBObject o){
 		this.id = (String) o.get("id");
 		this.user = (String) o.get("user");

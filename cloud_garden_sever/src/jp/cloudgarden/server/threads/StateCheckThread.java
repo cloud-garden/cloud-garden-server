@@ -5,7 +5,7 @@ import jp.cloudgarden.server.jax.CloudController;
 public class StateCheckThread extends Thread {
 	private CloudController controller;
 	private boolean isRunning = false;
-	private int intervalSec = 3600;
+	private int intervalSec = 3600*3;//3時間に一回
 
 	public StateCheckThread(CloudController controller) {
 		this.controller = controller;
