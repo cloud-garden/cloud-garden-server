@@ -23,7 +23,7 @@ import jp.cloudgarden.server.model.State;
 @Path("/")
 public class JaxAdapter {
 
-	private final CloudController controller = new CloudController();
+	private static final CloudController controller = new CloudController();
 
 	public static final String OK_STATUS = "{\"status\" : \"OK\"}";
 	public static final String ERR_STATUS = "{\"status\" : \"ERROR\"}";
@@ -241,15 +241,4 @@ public class JaxAdapter {
 		return Response.status(200).entity(OK_STATUS).build();
 	}
 
-	/**
-	 * ./api/ へのアクセスを ./api/application.wadl（APIの仕様書） にリダイレクトする
-	 * @return
-	 * @throws URISyntaxException
-	 */
-	@GET
-	@Path("/")
-	public Response redirect() throws URISyntaxException{
-		URI uri = new URI("application.wadl");
-		return Response.seeOther(uri).build();
-	}
 }

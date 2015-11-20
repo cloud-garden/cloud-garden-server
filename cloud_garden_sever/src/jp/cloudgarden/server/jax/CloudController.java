@@ -15,7 +15,8 @@ import javax.imageio.ImageIO;
 import jp.cloudgarden.server.model.Schedule;
 import jp.cloudgarden.server.model.SensorValue;
 import jp.cloudgarden.server.model.State;
-import jp.cloudgarden.server.threads.ScheduleCheckTread;
+import jp.cloudgarden.server.threads.ScheduleCheckThread;
+import jp.cloudgarden.server.threads.StateCheckThread;
 import jp.cloudgarden.server.util.DBUtils;
 
 import org.bson.types.ObjectId;
@@ -41,18 +42,24 @@ public class CloudController {
 	private static String latestPhotoData = new String();
 	public boolean needWatering = false;
 
-	private ScheduleCheckTread scheduleCheckTread;
-	private ScheduleCheckTread stateCheckTread;;
+	private static ScheduleCheckThread scheduleCheckTread;
+	private static StateCheckThread stateCheckTread;
 
 	public CloudController() {
+		System.out.println("controller thread is generated : "+Thread.currentThread().toString());
 		this.state_collection = DBUtils.getInstance().getDb().getCollection(stateCollectionName);
 		this.past_schedule_collection = DBUtils.getInstance().getDb().getCollection(pastCollectionName);
 		this.active_schedule_collection = DBUtils.getInstance().getDb().getCollection(scheduleCollectionName);
 		this.photo_collection = DBUtils.getInstance().getDb().getCollection(photoCollectionName);
-		this.scheduleCheckTread = new ScheduleCheckTread(this);
-		this.scheduleCheckTread.start();
-		this.stateCheckTread  = new ScheduleCheckTread(this);
-		this.stateCheckTread.start();
+		if(scheduleCheckTread == null){
+			scheduleCheckTread  = new ScheduleCheckThread(this);
+			scheduleCheckTread.start();
+		}
+		if(stateCheckTread == null){
+			stateCheckTread = new StateCheckThread(this);
+			stateCheckTread.start();
+		}
+
 	}
 
 	public void createActiveSchedule(Schedule sc){
@@ -140,7 +147,7 @@ public class CloudController {
 	public State getPastPreviousState(String user,long date){
 		Calendar givenDate = Calendar.getInstance();
 		givenDate.setTimeInMillis(date);
-		System.out.println("check " + new Date(date).toString());
+		System.out.println("check "+user +":"+ new Date(date).toString());
 		DBObject query = new BasicDBObject();
 		query.put("user", user);
 		DBCursor cursor = state_collection.find(query);
@@ -222,7 +229,7 @@ public class CloudController {
 			if(isRoutine){
 				if(scheduledTime.get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY)
 						&& scheduledTime.get(Calendar.MINUTE) == currentTime.get(Calendar.MINUTE) ){
-					System.err.println(Calendar.getInstance().getTime().toString() +" routine watering ");
+					System.err.println(Calendar.getInstance().getTime().toString() +" routine watering at " + Thread.currentThread().toString());
 					needWatering = true;
 					Schedule sc = new Schedule(o);
 					sc.setDate(currentTime.getTime().getTime());
@@ -232,7 +239,7 @@ public class CloudController {
 				if(scheduledTime.compareTo(currentTime) > 0){
 					continue;
 				}
-				System.err.println(Calendar.getInstance().getTime().toString() +" not-routine watering ");
+				System.err.println(Calendar.getInstance().getTime().toString() +" not-routine watering at " + Thread.currentThread().toString());
 				//If d is a past time, execute watering.
 				needWatering = true;
 				Schedule sc = new Schedule(o);
@@ -323,7 +330,8 @@ public class CloudController {
 			ImageIO.write(bImage, "png", baos);
 			return baos;
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("image not found.");
+			//			e.printStackTrace();
 		}
 		return null;
 	}
